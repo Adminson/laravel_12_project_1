@@ -37,7 +37,7 @@ class SelectInputListAdminController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('select_input_lists', 'select_value')
-                    ->where(fn($q) => $q->where('data_type', $request->input('data_type'))),
+                    ->where(fn ($q) => $q->where('data_type', $request->input('data_type'))),
             ],
         ]);
 
@@ -55,7 +55,7 @@ class SelectInputListAdminController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('select_input_lists', 'select_value')
-                    ->where(fn($q) => $q->where('data_type', $selectInputList->data_type))
+                    ->where(fn ($q) => $q->where('data_type', $selectInputList->data_type))
                     ->ignore($selectInputList->id),
             ],
         ]);

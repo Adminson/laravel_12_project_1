@@ -1,0 +1,17 @@
+includes:
+    - vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+
+    level: 4
+
+    bootstrapFiles:
+        - bootstrap/app.php
+
+    excludePaths:
+        - vendor
+        - storage
+        - bootstrap/cache
+        - database/migrations

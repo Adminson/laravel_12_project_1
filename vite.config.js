@@ -6,6 +6,7 @@ export default defineConfig({
     laravel({
       input: [
         'resources/js/select-input-list-editor.js',
+        'resources/js/app.js',
       ],
       refresh: true,
     }),

@@ -25,6 +25,17 @@
     <script src="{{ asset('vuexy/assets/js/config.js') }}"></script>
     <script src="{{ asset('vuexy/assets/vendor/libs/@algolia/autocomplete-js.js') }}"></script>
 
+    {{-- DataTables Bootstrap 5 CSS --}}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.css">
+
+    {{-- <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}"> --}}
+
+    {{-- datetime picker CSS --}}
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css"> --}}
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}">
+
+    {{-- sweet alert2  --}}
+     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.css') }}">
 
     @stack('styles')
 </head>
@@ -131,26 +142,20 @@
                 <!-- Content wrapper -->
                 <div class="content-wrapper">
                     <!-- Menu -->
-                    <aside id="layout-menu" class="layout-menu-horizontal menu-horizontal menu flex-grow-0">
-                        <div class="container-fluid d-flex h-100">
-                            <ul class="menu-inner py-1">
-                                <!-- Page -->
-                                <li class="menu-item active">
-                                    <a href="index.html" class="menu-link">
-                                        <i class="menu-icon icon-base ti tabler-smart-home"></i>
-                                        <div data-i18n="Page 1">Page 1</div>
-                                    </a>
-                                </li>
-                                <li class="menu-item">
-                                    <a href="page-2.html" class="menu-link">
-                                        <i class="menu-icon icon-base ti tabler-app-window"></i>
-                                        <div data-i18n="Page 2">Page 2</div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </aside>
+                    @include('layouts.top_menu')
+
                     <!-- / Menu -->
+
+                    {{-- loading screen --}}
+
+                    <div id="global-loader" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,0.6); z-index: 9999;">
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <!-- Content -->
 
@@ -206,7 +211,24 @@
     <script src="{{ asset('vuexy/assets/vendor/libs/hammer/hammer.js') }}"></script>
     <script src="{{ asset('vuexy/assets/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('vuexy/assets/js/main.js') }}"></script>
+    {{-- DataTables JS --}}
+    {{-- <script src="{{ asset('vuexy/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script> --}}
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.bootstrap5.js"></script>
 
+    {{-- jQuery Validation --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.21.0/additional-methods.min.js"></script>
+
+    {{-- datetime picker JS --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script> --}}
+    <script src="{{ asset('vuexy/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+
+    {{-- sweet alert2 --}}
+    <script src="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
+
+    @vite(['resources/js/app.js'])
     <!-- CSRF for jQuery AJAX -->
     <script>
         $.ajaxSetup({
