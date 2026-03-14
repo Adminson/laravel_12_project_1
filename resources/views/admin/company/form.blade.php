@@ -1,24 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    @php
-        $companySection = $formSections['company'];
-        $subscriptionSection = $formSections['subscription'];
-        $companyFields = collect($companySection['fields']);
-        $logoField = $companyFields->firstWhere('name', 'logo');
-        $companyPrimaryFields = $companyFields->reject(fn ($field) => $field['name'] === 'logo')->values();
-        $subscriptionFields = collect($subscriptionSection['fields'])
-            ->map(function ($field) use ($company) {
-                if ($field['name'] === 'suspend_reason') {
-                    $field['disabled'] = !filter_var(old('suspend_login', $company->suspend_login), FILTER_VALIDATE_BOOLEAN);
-                }
-
-                return $field;
-            })
-            ->values();
-    @endphp
-
-    <ul class="nav nav-tabs mb-4">
+    <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link active" href="{{ $isEdit ? route('company_setting_edit', $company->id) : route('company_setting_create') }}">
                 Company Details
@@ -35,81 +18,96 @@
 
     <form id="companyForm" method="POST" enctype="multipart/form-data" novalidate>
         @csrf
-
-        <div class="row g-4">
-            <div class="col-xl-8">
-                <x-admin.form-section
-                    :title="$companySection['title']"
-                    :description="$companySection['description']"
-                    :icon="$companySection['icon']"
-                    class="mb-4"
-                >
-                    @foreach ($companyPrimaryFields as $field)
-                        <x-admin.form-field :field="$field" :model="$company" />
-                    @endforeach
-
-                    <x-admin.form-field :field="$logoField" :model="$company" />
-
-                    <div class="col-md-6">
-                        <label class="form-label">Logo Preview</label>
-                        <div class="border rounded-3 p-3 text-center bg-body">
-                            <img
-                                id="logoPreview"
-                                src="{{ $company->logo_url ?? 'https://placehold.co/600x400?text=Logo+Preview' }}"
-                                alt="Logo Preview"
-                                class="img-fluid rounded"
-                                style="max-height: 160px; object-fit: contain;"
-                            >
-                        </div>
-                    </div>
-                </x-admin.form-section>
-
-                <x-admin.form-section
-                    :title="$subscriptionSection['title']"
-                    :description="$subscriptionSection['description']"
-                    :icon="$subscriptionSection['icon']"
-                >
-                    @foreach ($subscriptionFields as $field)
-                        <x-admin.form-field :field="$field" :model="$company" />
-                    @endforeach
-                </x-admin.form-section>
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">{{ $isEdit ? 'Edit Company' : 'Create Company' }}</h4>
             </div>
+            <div class="card-body">
 
-            <div class="col-xl-4">
-                <div class="card border shadow-none mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-1">{{ $isEdit ? 'Update Company Profile' : 'Create Company Profile' }}</h5>
-                        <p class="mb-0 text-muted">Review branding, access dates and login controls before saving.</p>
+                <div class="divider divider-info">
+                    <h4 class="divider-text">Company Details</h4>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Company Name <span class="text-danger">*</span></label>
+                        <input type="text" name="company_name" class="form-control" value="{{ $company->company_name }}">
                     </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center gap-3 mb-4">
-                            <span class="avatar avatar-lg bg-label-primary">
-                                <i class="icon-base ti tabler-building icon-lg"></i>
-                            </span>
-                            <div>
-                                <h6 class="mb-1">{{ $company->company_name ?: 'New company profile' }}</h6>
-                                <span class="badge {{ $company->suspend_login ? 'bg-label-danger' : 'bg-label-success' }}">
-                                    {{ $company->suspend_login ? 'Login Suspended' : 'Login Enabled' }}
-                                </span>
-                            </div>
-                        </div>
 
-                        <div class="bg-label-secondary rounded-3 p-3 mb-4">
-                            <div class="small text-uppercase text-muted fw-semibold mb-2">Notes</div>
-                            <p class="mb-2 text-body-secondary">Header and footer content are good places for invoice text, registration details and legal disclaimers.</p>
-                            <p class="mb-0 text-body-secondary">
-                                {{ $isEdit ? 'System messages can be managed after the company profile is saved.' : 'System messages become available after the first save.' }}
-                            </p>
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Reg No</label>
+                        <input type="text" name="reg_no" class="form-control" value="{{ $company->reg_no }}">
+                    </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                {{ $isEdit ? 'Save Changes' : 'Create Company' }}
-                            </button>
-                            <a href="{{ route('company_setting_index') }}" class="btn btn-label-secondary">Back to List</a>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Contact</label>
+                        <input type="text" name="contact" class="form-control" value="{{ $company->contact }}">
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea name="address" class="form-control" rows="3">{{ $company->address }}</textarea>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Header Info</label>
+                        <textarea name="header_info" class="form-control" rows="3">{{ $company->header_info }}</textarea>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Footer Info</label>
+                        <textarea name="footer_info" class="form-control" rows="3">{{ $company->footer_info }}</textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Logo</label>
+                        <input type="file" name="logo" id="logoInput" class="form-control" accept="image/*">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Image Preview</label>
+                        <div>
+                            <img id="logoPreview" src="{{ $company->logo_url ?? 'https://placehold.co/600x400' }}" alt="Logo Preview" style="max-width: 180px; max-height: 120px; border:1px solid #ddd; padding:4px;">
                         </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="card mt-5">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="divider divider-info">
+                        <h4 class="divider-text">Subscription</h4>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Subscription Start Date</label>
+                        <input type="datetime-local" name="sub_start_date" class="form-control" value="{{ optional($company->sub_start_date)->format('Y-m-d\TH:i') }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Subscription End Date</label>
+                        <input type="datetime-local" name="sub_end_date" class="form-control" value="{{ optional($company->sub_end_date)->format('Y-m-d\TH:i') }}">
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" name="suspend_login" id="suspend_login" class="form-check-input" value="1" {{ $company->suspend_login ? 'checked' : '' }}>
+                            <label for="suspend_login" class="form-check-label">Suspend Login</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Suspend Reason</label>
+                        <input type="text" name="suspend_reason" id="suspend_reason" class="form-control" value="{{ $company->suspend_reason }}" {{ $company->suspend_login ? '' : 'disabled' }}>
                     </div>
                 </div>
+
+                <div class="text-end">
+                    <a href="{{ route('company_setting_index') }}" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-primary">{{ $isEdit ? 'Save Changes' : 'Create Company' }}</button>
+                </div>
+
             </div>
         </div>
     </form>
@@ -127,48 +125,23 @@
 
         function previewLogo(input) {
             const file = input.files[0];
-
-            if (!file) {
-                return;
-            }
+            if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(event) {
-                $('#logoPreview').attr('src', event.target.result);
+            reader.onload = function(e) {
+                $('#logoPreview').attr('src', e.target.result);
             };
             reader.readAsDataURL(file);
         }
 
-        function applyCompanyServerErrors(errors) {
-            $('.server-error').remove();
-            $('#companyForm').find('.is-invalid').removeClass('is-invalid');
-
-            $.each(errors, function(key, value) {
-                const $input = $('#companyForm').find(`[name="${key}"]`).last();
-
-                if (!$input.length) {
-                    return;
-                }
-
-                $input.addClass('is-invalid');
-
-                if ($input.hasClass('form-check-input')) {
-                    $input.closest('.form-check').after(`<div class="invalid-feedback server-error d-block">${value[0]}</div>`);
-                    return;
-                }
-
-                $input.after(`<div class="invalid-feedback server-error d-block">${value[0]}</div>`);
-            });
-        }
-
         $(function() {
-            $.validator.addMethod('greaterThanStart', function(value) {
+            console.log('Company form script loaded');
+            console.log('appAjax:', typeof window.appAjax);
+            console.log('validate plugin:', typeof $.fn.validate);
+
+            $.validator.addMethod('greaterThanStart', function(value, element) {
                 const start = $('input[name="sub_start_date"]').val();
-
-                if (!value || !start) {
-                    return true;
-                }
-
+                if (!value || !start) return true;
                 return new Date(value) >= new Date(start);
             }, 'End date must be greater than or equal to start date.');
 
@@ -178,7 +151,7 @@
                 toggleSuspendReason();
             });
 
-            $('#logo').on('change', function() {
+            $('#logoInput').on('change', function() {
                 previewLogo(this);
             });
 
@@ -222,25 +195,38 @@
                 submitHandler: function(form, event) {
                     event.preventDefault();
 
+                    const formData = new FormData(form);
+
                     appAjax({
                         url: '{{ $isEdit ? route('company_setting_update', $company->id) : route('company_setting_store') }}',
                         method: 'POST',
-                        data: new FormData(form),
+                        data: formData,
                         onSuccess: function(res) {
                             Swal.fire('Success', res.message, 'success').then(() => {
                                 window.location.href = res.redirect_url;
                             });
                         },
                         onError: function(xhr) {
-                            const response = xhr.responseJSON || {};
-                            let message = response.message || 'Save failed.';
+                            $('.invalid-feedback.server-error').remove();
 
-                            if (xhr.status === 422 && response.errors) {
-                                applyCompanyServerErrors(response.errors);
-                                message = 'Please check the highlighted company fields.';
+                            let msg = xhr.responseJSON?.message || 'Save failed.';
+
+                            if (xhr.status === 422 && xhr.responseJSON?.errors) {
+                                const errors = xhr.responseJSON.errors;
+
+                                $.each(errors, function(key, value) {
+                                    const input = $('[name="' + key + '"]');
+                                    input.addClass('is-invalid');
+
+                                    if (input.next('.server-error').length === 0) {
+                                        input.after('<div class="invalid-feedback server-error d-block">' + value[0] + '</div>');
+                                    }
+                                });
+
+                                msg = 'Please check the form.';
                             }
 
-                            Swal.fire('Error', message, 'error');
+                            Swal.fire('Error', msg, 'error');
                         }
                     });
 

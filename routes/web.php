@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Admin\SelectInputListAdminController;
 use App\Http\Controllers\Admin\CompanyAdminController;
-use App\Http\Controllers\Admin\GlobalSetupAdminController;
 use App\Http\Controllers\Admin\SystemMessageAdminController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\ProfileController;
@@ -79,16 +78,6 @@ Route::prefix('admin/system-message')
         Route::get('/item/{systemMessage}', [SystemMessageAdminController::class, 'show'])->name('show');
         Route::post('/item/{systemMessage}/update', [SystemMessageAdminController::class, 'update'])->name('update');
         Route::delete('/item/{systemMessage}', [SystemMessageAdminController::class, 'destroy'])->name('delete');
-    });
-
-Route::prefix('admin/global-setup')
-    ->middleware(['auth'])
-    ->name('global_setup_')
-    ->group(function () {
-        Route::get('/', [GlobalSetupAdminController::class, 'index'])->name('index');
-        Route::post('/store', [GlobalSetupAdminController::class, 'store'])->name('store');
-        Route::post('/{globalSetupProfile}/update', [GlobalSetupAdminController::class, 'update'])->name('update');
-        Route::delete('/{globalSetupProfile}', [GlobalSetupAdminController::class, 'destroy'])->name('delete');
     });
 
 require __DIR__ . '/auth.php';
