@@ -14,12 +14,18 @@
                        <div data-i18n="Page 2">Select Demo</div>
                    </a>
                </li>
-               <li class="menu-item {{ request()->routeIs('company_setting_*', 'system_message_*') ? 'active' : '' }}">
-                   <a href="{{ route('company_setting_index') }}" class="menu-link">
-                       <i class="menu-icon icon-base ti tabler-app-window"></i>
-                       <div data-i18n="Page 2">Company List</div>
-                   </a>
-               </li>
-           </ul>
-       </div>
-   </aside>
+                <li class="menu-item {{ request()->routeIs('company_setting_*', 'system_message_*') ? 'active' : '' }}">
+                    <a href="{{ route('company_setting_index') }}" class="menu-link">
+                        <i class="menu-icon icon-base ti tabler-app-window"></i>
+                        <div data-i18n="Page 2">Company List</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->routeIs('global_setup_*') ? 'active' : '' }}">
+                    <a href="{{ route('global_setup_index') }}" class="menu-link">
+                        <i class="menu-icon icon-base ti tabler-adjustments-horizontal"></i>
+                        <div data-i18n="Page 3">Global Setup</div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>

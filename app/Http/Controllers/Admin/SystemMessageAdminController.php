@@ -15,8 +15,18 @@ class SystemMessageAdminController extends Controller
 {
     public function index(CompanyProfile $companyProfile)
     {
+        $now = now();
+        $activeSystemMessages = $companyProfile->systemMessages()
+            ->whereNotNull('start_date')
+            ->whereNotNull('end_date')
+            ->where('start_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->latest('id')
+            ->get();
+
         return view('admin.company.system-message', [
             'company' => $companyProfile,
+            'activeSystemMessages' => $activeSystemMessages,
         ]);
     }
 
@@ -27,10 +37,10 @@ class SystemMessageAdminController extends Controller
         return DataTables::eloquent($query)
             ->addIndexColumn()
             ->editColumn('start_date', function ($row) {
-                return optional($row->start_date)->format('Y-m-d H:i:s');
+                return optional($row->start_date)->format('d-M-Y h:i A');
             })
             ->editColumn('end_date', function ($row) {
-                return optional($row->end_date)->format('Y-m-d H:i:s');
+                return optional($row->end_date)->format('d-M-Y h:i A');
             })
             ->editColumn('enable_email', function ($row) {
                 return $row->enable_email ? 'Yes' : 'No';
@@ -185,3 +195,4 @@ class SystemMessageAdminController extends Controller
         $message->save();
     }
 }
+

@@ -52,6 +52,7 @@ class CompanyAdminController extends Controller
         return view('admin.company.form', [
             'company' => new CompanyProfile(),
             'isEdit' => false,
+            'formSections' => $this->formSections(),
         ]);
     }
 
@@ -60,6 +61,7 @@ class CompanyAdminController extends Controller
         return view('admin.company.form', [
             'company' => $companyProfile,
             'isEdit' => true,
+            'formSections' => $this->formSections(),
         ]);
     }
 
@@ -182,5 +184,101 @@ class CompanyAdminController extends Controller
         }
 
         $company->save();
+    }
+
+    protected function formSections(): array
+    {
+        return [
+            'company' => [
+                'title' => 'Company Details',
+                'description' => 'Capture the legal, contact and branding information shown across the platform.',
+                'icon' => 'tabler-building-skyscraper',
+                'fields' => [
+                    [
+                        'name' => 'company_name',
+                        'label' => 'Company Name',
+                        'type' => 'text',
+                        'required' => true,
+                        'placeholder' => 'Speed Mart Retail Holdings Berhad',
+                        'col' => 'col-md-6',
+                    ],
+                    [
+                        'name' => 'reg_no',
+                        'label' => 'Registration Number',
+                        'type' => 'text',
+                        'placeholder' => '202601000123',
+                        'col' => 'col-md-6',
+                    ],
+                    [
+                        'name' => 'contact',
+                        'label' => 'Contact',
+                        'type' => 'text',
+                        'placeholder' => '+60 12-345 6789',
+                        'col' => 'col-md-6',
+                    ],
+                    [
+                        'name' => 'address',
+                        'label' => 'Address',
+                        'type' => 'textarea',
+                        'rows' => 3,
+                        'col' => 'col-12',
+                    ],
+                    [
+                        'name' => 'header_info',
+                        'label' => 'Header Info',
+                        'type' => 'textarea',
+                        'rows' => 3,
+                        'col' => 'col-12',
+                    ],
+                    [
+                        'name' => 'footer_info',
+                        'label' => 'Footer Info',
+                        'type' => 'textarea',
+                        'rows' => 3,
+                        'col' => 'col-12',
+                    ],
+                    [
+                        'name' => 'logo',
+                        'label' => 'Company Logo',
+                        'type' => 'file',
+                        'accept' => 'image/*',
+                        'help' => 'Accepted image formats up to 2MB.',
+                        'col' => 'col-md-6',
+                    ],
+                ],
+            ],
+            'subscription' => [
+                'title' => 'Subscription & Access',
+                'description' => 'Manage the subscription window and control whether login access is temporarily suspended.',
+                'icon' => 'tabler-calendar-time',
+                'fields' => [
+                    [
+                        'name' => 'sub_start_date',
+                        'label' => 'Subscription Start Date',
+                        'type' => 'datetime-local',
+                        'col' => 'col-md-6',
+                    ],
+                    [
+                        'name' => 'sub_end_date',
+                        'label' => 'Subscription End Date',
+                        'type' => 'datetime-local',
+                        'col' => 'col-md-6',
+                    ],
+                    [
+                        'name' => 'suspend_login',
+                        'label' => 'Suspend Login',
+                        'type' => 'switch',
+                        'col' => 'col-12',
+                    ],
+                    [
+                        'name' => 'suspend_reason',
+                        'label' => 'Suspend Reason',
+                        'type' => 'text',
+                        'placeholder' => 'Explain why access is restricted.',
+                        'col' => 'col-12',
+                    ],
+                ],
+            ],
+        ];
     }
 }

@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}">
 
     {{-- sweet alert2  --}}
-     <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.css') }}">
+    <link rel="stylesheet" href="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.css') }}">
 
     @stack('styles')
 </head>
@@ -147,15 +147,13 @@
                     <!-- / Menu -->
 
                     {{-- loading screen --}}
-
-                    <div id="global-loader" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,0.6); z-index: 9999;">
+                     <div id="global-loader" style="display:none; position:fixed; inset:0; background:rgba(255, 255, 255, 0.774); z-index: 9999;">
                         <div class="d-flex justify-content-center align-items-center h-100">
-                            <div class="spinner-border text-primary" role="status">
+                            <div class="spinner-border spinner-border-lg text-primary" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
                         </div>
                     </div>
-
 
                     <!-- Content -->
 

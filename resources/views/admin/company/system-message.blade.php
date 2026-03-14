@@ -40,8 +40,38 @@
                 </thead>
                 <tbody></tbody>
             </table>
+
+            @if ($activeSystemMessages->isNotEmpty())
+                @php
+                    $alertStyles = [
+                        'blue' => ['class' => 'alert-solid-success', 'icon' => 'tabler-check'],
+                        'red' => ['class' => 'alert-solid-danger', 'icon' => 'tabler-ban'],
+                        'orange' => ['class' => 'alert-solid-warning', 'icon' => 'tabler-bell'],
+                    ];
+                @endphp
+
+                <div class="mt-4">
+                    @foreach ($activeSystemMessages as $systemMessage)
+                        @php
+                            $alertStyle = $alertStyles[$systemMessage->type] ?? $alertStyles['blue'];
+                            $formattedDescription = str_replace(['{{ date1 }}', '{{ date2 }}'], [optional($systemMessage->start_date)->format('d-M-Y h:i A'), optional($systemMessage->end_date)->format('d-M-Y h:i A')], $systemMessage->description);
+                        @endphp
+
+                        <div class="alert {{ $alertStyle['class'] }} d-flex align-items-center mb-3" role="alert">
+                            <span class="alert-icon rounded">
+                                <i class="icon-base ti {{ $alertStyle['icon'] }} icon-md"></i>
+                            </span>
+                            <div>
+                                <strong>{{ $systemMessage->title }}</strong>
+                                <div>{{ $formattedDescription }}</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </div>
+
     <div class="modal fade" id="systemMessageModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
