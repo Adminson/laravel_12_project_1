@@ -4,7 +4,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Company List</h4>
-            <a href="{{ route('company_setting_create') }}" class="btn btn-primary">
+            <a href="{{ route('setting.company.create') }}" class="btn btn-primary">
                 Create
             </a>
         </div>
@@ -36,7 +36,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('company_setting_list') }}',
+                    url: '{{ route('setting.company.list') }}',
                     type: 'GET'
                 },
                 columns: [{
@@ -92,7 +92,7 @@
                 if (!result.isConfirmed) return;
 
                 appAjax({
-                    url: `/admin/company-setting/${id}`,
+                    url: `/setting/company/${id}`,
                     method: 'DELETE',
                     onSuccess: function(res) {
                         Swal.fire({

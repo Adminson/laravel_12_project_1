@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\SelectInputListAdminController;
 use App\Http\Controllers\Admin\CompanyAdminController;
+use App\Http\Controllers\Admin\SelectInputListAdminController;
 use App\Http\Controllers\Admin\SystemMessageAdminController;
+use App\Http\Controllers\Admin\UiConfigurationController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -21,63 +22,94 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-Route::prefix('admin')
+Route::prefix('setting')
     ->middleware(['auth'])
-    ->name('admin_select_input_lists_')
+    ->name('setting.')
     ->group(function () {
-        Route::get('/select-example', [SelectInputListAdminController::class, 'index'])->name('index');
-        Route::get('/select-input-lists/{data_type}/options', [SelectInputListAdminController::class, 'options'])->name('options');
-        Route::post('/select-input-lists', [SelectInputListAdminController::class, 'store'])->name('store');
-        Route::put('/select-input-lists/{selectInputList}', [SelectInputListAdminController::class, 'update'])->name('update');
-        Route::delete('/select-input-lists/{selectInputList}', [SelectInputListAdminController::class, 'destroy'])->name('destroy');
-    });
 
-Route::prefix('admin/company-setting')
-    ->middleware(['auth'])
-    ->name('company_setting_')
-    ->group(function () {
-        Route::get('/', [SelectInputListAdminController::class, 'index'])->name('index');
-        Route::get('/list', [SelectInputListAdminController::class, 'list'])->name('list');
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | User Setting
+        |--------------------------------------------------------------------------
+        */
+        // setting/user
+        Route::prefix('user')
+            ->name('user.')
+            ->group(function () {
+                Route::get('/', [UserAdminController::class, 'index'])->name('index'); //setting.user.index
+                Route::get('/list', [UserAdminController::class, 'list'])->name('list'); //setting.user.list
+            });
 
-Route::prefix('admin/user-setting')
-    ->middleware(['auth'])
-    ->name('user_setting_')
-    ->group(function () {
-        Route::get('/', [UserAdminController::class, 'index'])->name('index');
-        Route::get('/list', [UserAdminController::class, 'list'])->name('list');
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | Company Setting
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('company')
+            ->name('company.')
+            ->group(function () {
+                Route::get('/', [CompanyAdminController::class, 'index'])->name('index'); //setting.company.index
+                Route::get('/list', [CompanyAdminController::class, 'list'])->name('list');
 
+                Route::get('/create', [CompanyAdminController::class, 'create'])->name('create');
+                Route::post('/store', [CompanyAdminController::class, 'store'])->name('store');
 
+                Route::get('/{company_profile}/edit', [CompanyAdminController::class, 'edit'])->name('edit');
+                Route::post('/{company_profile}/update', [CompanyAdminController::class, 'update'])->name('update');
+                Route::delete('/{company_profile}', [CompanyAdminController::class, 'destroy'])->name('delete');
+            });
 
+        /*
+        |--------------------------------------------------------------------------
+        | System Message
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('system-message')
+            ->name('system_message.')
+            ->group(function () {
+                Route::get('/{company_profile}', [SystemMessageAdminController::class, 'index'])->name('index'); //setting.system_message.index
+                Route::get('/{company_profile}/list', [SystemMessageAdminController::class, 'list'])->name('list');
 
-Route::prefix('admin/company-setting')
-    ->middleware(['auth'])
-    ->name('company_setting_')
-    ->group(function () {
-        Route::get('/', [CompanyAdminController::class, 'index'])->name('index');
-        Route::get('/list', [CompanyAdminController::class, 'list'])->name('list');
+                Route::post('/{company_profile}/store', [SystemMessageAdminController::class, 'store'])->name('store');
+                Route::get('/item/{system_message}', [SystemMessageAdminController::class, 'show'])->name('show');
+                Route::post('/item/{system_message}/update', [SystemMessageAdminController::class, 'update'])->name('update');
+                Route::delete('/item/{system_message}', [SystemMessageAdminController::class, 'destroy'])->name('delete');
+            });
 
-        Route::get('/create', [CompanyAdminController::class, 'create'])->name('create');
-        Route::post('/store', [CompanyAdminController::class, 'store'])->name('store');
+        /*
+        |--------------------------------------------------------------------------
+        | UI Configuration
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('ui-configuration')
+            ->name('ui_configuration.')
+            ->group(function () {
+                Route::get('/', [UiConfigurationController::class, 'index'])->name('index');
+                Route::get('/list', [UiConfigurationController::class, 'list'])->name('list');
 
-        Route::get('/{companyProfile}/edit', [CompanyAdminController::class, 'edit'])->name('edit');
-        Route::post('/{companyProfile}/update', [CompanyAdminController::class, 'update'])->name('update');
-        Route::delete('/{companyProfile}', [CompanyAdminController::class, 'destroy'])->name('delete');
-    });
+                Route::get('/create', [UiConfigurationController::class, 'create'])->name('create');
+                Route::post('/store', [UiConfigurationController::class, 'store'])->name('store');
 
-Route::prefix('admin/system-message')
-    ->middleware(['auth'])
-    ->name('system_message_')
-    ->group(function () {
-        Route::get('/{companyProfile}', [SystemMessageAdminController::class, 'index'])->name('index');
-        Route::get('/{companyProfile}/list', [SystemMessageAdminController::class, 'list'])->name('list');
+                Route::get('/{ui_configuration}/edit', [UiConfigurationController::class, 'edit'])->name('edit');
+                Route::put('/{ui_configuration}/update', [UiConfigurationController::class, 'update'])->name('update');
+            });
 
-        Route::post('/{companyProfile}/store', [SystemMessageAdminController::class, 'store'])->name('store');
-        Route::get('/item/{systemMessage}', [SystemMessageAdminController::class, 'show'])->name('show');
-        Route::post('/item/{systemMessage}/update', [SystemMessageAdminController::class, 'update'])->name('update');
-        Route::delete('/item/{systemMessage}', [SystemMessageAdminController::class, 'destroy'])->name('delete');
+        /*
+        |--------------------------------------------------------------------------
+        | Select Input List
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('select-input-list')
+            ->name('select_input_list.')
+            ->group(function () {
+                Route::get('/', [SelectInputListAdminController::class, 'index'])->name('index');
+                Route::get('/list', [SelectInputListAdminController::class, 'list'])->name('list');
+                Route::get('/{data_type}/options', [SelectInputListAdminController::class, 'options'])->name('options');
+
+                Route::post('/store', [SelectInputListAdminController::class, 'store'])->name('store');
+                Route::put('/{select_input_list}/update', [SelectInputListAdminController::class, 'update'])->name('update');
+                Route::delete('/{select_input_list}', [SelectInputListAdminController::class, 'delete'])->name('delete');
+            });
     });
 
 require __DIR__ . '/auth.php';

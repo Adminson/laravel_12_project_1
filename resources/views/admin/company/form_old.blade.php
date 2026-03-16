@@ -3,7 +3,7 @@
 @section('content')
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link active" href="{{ $isEdit ? route('setting.company.edit', $company->id) : route('setting.company.create') }}">
+            <a class="nav-link active" href="{{ $isEdit ? route('company_setting_edit', $company->id) : route('company_setting_create') }}">
                 Company Details
             </a>
         </li>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <x-form.input-label for="company_name" value="Company Name" :required="true" />
+                        <label class="form-label">Company Name <span class="text-danger">*</span></label>
                         <input type="text" name="company_name" class="form-control" value="{{ $company->company_name }}">
                     </div>
 
@@ -104,7 +104,7 @@
                 </div>
 
                 <div class="text-end">
-                    <a href="{{ route('setting.company.index') }}" class="btn btn-secondary">Back</a>
+                    <a href="{{ route('company_setting_index') }}" class="btn btn-secondary">Back</a>
                     <button type="submit" class="btn btn-primary">{{ $isEdit ? 'Save Changes' : 'Create Company' }}</button>
                 </div>
 
@@ -198,7 +198,7 @@
                     const formData = new FormData(form);
 
                     appAjax({
-                        url: '{{ $isEdit ? route('setting.company.update', $company->id) : route('setting.company.store') }}',
+                        url: '{{ $isEdit ? route('company_setting_update', $company->id) : route('company_setting_store') }}',
                         method: 'POST',
                         data: formData,
                         onSuccess: function(res) {

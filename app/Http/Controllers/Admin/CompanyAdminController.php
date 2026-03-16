@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
 class CompanyAdminController extends Controller
@@ -34,8 +33,8 @@ class CompanyAdminController extends Controller
                 return $row->suspend_login ? 'Yes' : 'No';
             })
             ->addColumn('action', function ($row) {
-                $editUrl = route('company_setting_edit', $row->id);
-                $systemMessageUrl = route('system_message_index', $row->id);
+                $editUrl = route('setting.company.edit', $row->id);
+                $systemMessageUrl = route('setting.system_message.index', $row->id);
 
                 return '
                 <a href="' . $editUrl . '" class="btn btn-sm btn-warning">Edit</a>
@@ -76,7 +75,7 @@ class CompanyAdminController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Company created successfully.',
-                'redirect_url' => route('company_setting_edit', $company->id),
+                'redirect_url' => route('setting.company.edit', $company->id),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -100,7 +99,7 @@ class CompanyAdminController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Company updated successfully.',
-                'redirect_url' => route('company_setting_edit', $companyProfile->id),
+                'redirect_url' => route('setting.company.edit', $companyProfile->id),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();

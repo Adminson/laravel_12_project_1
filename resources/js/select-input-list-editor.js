@@ -74,7 +74,7 @@
     }
 
     function fetchOptions(dataType) {
-        return $.getJSON(`/admin/select-input-lists/${encodeURIComponent(dataType)}/options`);
+        return $.getJSON(`/setting/select-input-list/${encodeURIComponent(dataType)}/options`);
     }
 
     async function reloadSelect($select) {
@@ -150,7 +150,7 @@
         if (!value) return showError('Please enter a value.');
 
         $.ajax({
-            url: '/admin/select-input-lists',
+            url: '/setting/select-input-list',
             method: 'POST',
             data: {
                 data_type: activeDataType,
@@ -179,7 +179,7 @@
         if (!value) return showError('Please enter a value.');
 
         $.ajax({
-            url: `/admin/select-input-lists/${selectedItemId}`,
+            url: `/setting/select-input-list/${selectedItemId}/update`,
             method: 'PUT',
             data: {
                 select_value: value
@@ -206,7 +206,7 @@
         if (!confirm('Delete this value?')) return;
 
         $.ajax({
-            url: `/admin/select-input-lists/${selectedItemId}`,
+            url: `/setting/select-input-list/${selectedItemId}`,
             method: 'DELETE'
         })
             .done(async function () {
