@@ -9,3 +9,12 @@
         </x-alert.alert>
     @endif
 @endforeach
+
+{{-- 
+Example usage
+
+<x-alert.alert-session />
+
+@include('components.alert.alert-session')
+
+--}}

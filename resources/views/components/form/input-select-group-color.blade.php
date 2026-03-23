@@ -85,3 +85,31 @@
 @error($name)
     <div class="invalid-feedback">{{ $message }}</div>
 @enderror
+
+
+{{-- 
+Example usage
+
+<x-form.input-select2
+    name="country_id"
+    :options="$countryOptions"
+    :value="$company->country_id ?? ''"
+    placeholder="Select country"
+    :required="true"
+/>
+
+<x-form.input-select2
+    name="user_ids"
+    :options="$userOptions"
+    :value="$selectedUsers ?? []"
+    :multiple="true"
+    placeholder="Select users"
+/>
+
+<x-form.input-select2
+    name="product_category_id"
+    :options="$categoryOptions"
+    :value="old('product_category_id')"
+    wrapper-class="mb-0"
+/>
+--}}

@@ -72,3 +72,34 @@
 @error($name)
     <div class="invalid-feedback">{{ $message }}</div>
 @enderror
+
+
+{{-- 
+Example usage
+
+<x-form.input-select
+    name="status"
+    :options="[
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+    ]"
+    :value="$company->status ?? 'active'"
+    placeholder="Please select status"
+/>
+
+<x-form.input-select
+    name="label_font_family"
+    :options="$options['font_families']"
+    :option-attributes="$fontOptionAttributes"
+    :value="$configuration->label_font_family ?? ''"
+    class="font-family-select"
+    :required="true"
+/>
+
+<x-form.input-select
+    name="roles"
+    :options="$roleOptions"
+    :value="$selectedRoles ?? []"
+    :multiple="true"
+/>
+--}}

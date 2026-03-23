@@ -1,8 +1,8 @@
 @props([
     'name',
     'id' => null,
-    'type' => 'text',
     'value' => null,
+    'rows' => 3,
     'placeholder' => '',
     'required' => false,
     'readonly' => false,
@@ -20,11 +20,10 @@
     $finalStyle = \App\Support\FormInputStyle::make($appConfig ?? null, $customStyle, $inputType);
 @endphp
 
-<input
+<textarea
     id="{{ $fieldId }}"
-    type="{{ $type }}"
     name="{{ $name }}"
-    value="{{ $type !== 'password' ? $fieldValue : '' }}"
+    rows="{{ $rows }}"
     placeholder="{{ $placeholder }}"
     @required($required)
     @readonly($readonly)
@@ -34,7 +33,7 @@
         'is-invalid' => $errors->has($fieldNameDot),
     ]) }}
     style="{{ $finalStyle }}"
->
+>{{ $fieldValue }}</textarea>
 
 @error($fieldNameDot)
     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -43,27 +42,23 @@
 {{-- 
 Example usage
 
-<x-form.input-text
-    name="company_name"
-    :value="$company->company_name ?? ''"
-    placeholder="Enter company name"
-    :required="true"
+<x-form.textarea
+    name="company_address"
+    :value="$company->company_address ?? ''"
+    rows="3"
+    placeholder="Enter full company address"
 />
 
-<x-form.input-text
-    name="label_font_size"
-    type="number"
-    :value="$configuration->label_font_size ?? 14"
-    min="1"
-    max="100"
-    step="1"
+<x-form.textarea
+    name="footer_text"
+    :value="$configuration->footer_text ?? ''"
+    rows="4"
 />
 
-<x-form.input-text
-    name="contact_email"
-    type="email"
-    :value="$company->contact_email ?? ''"
-    placeholder="example@domain.com"
-    maxlength="255"
+<x-form.textarea
+    name="remarks"
+    :value="old('remarks')"
+    rows="5"
+    maxlength="1000"
 />
 --}}

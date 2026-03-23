@@ -80,3 +80,31 @@
         <div class="invalid-feedback d-block">{{ $message }}</div>
     @enderror
 </div>
+
+
+{{-- 
+Example usage
+
+<x-form.input-select2
+    name="country_id"
+    :options="$countryOptions"
+    :value="$company->country_id ?? ''"
+    placeholder="Select country"
+    :required="true"
+/>
+
+<x-form.input-select2
+    name="user_ids"
+    :options="$userOptions"
+    :value="$selectedUsers ?? []"
+    :multiple="true"
+    placeholder="Select users"
+/>
+
+<x-form.input-select2
+    name="product_category_id"
+    :options="$categoryOptions"
+    :value="old('product_category_id')"
+    wrapper-class="mb-0"
+/>
+--}}

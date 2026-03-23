@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompanyProfile extends Model
 {
@@ -67,6 +68,11 @@ class CompanyProfile extends Model
         'cmp_modifiedon' => 'datetime',
         'cmp_deletedon' => 'datetime',
     ];
+
+    public function memos(): MorphMany
+    {
+        return $this->morphMany(Memo::class, 'memoable')->latest();
+    }
 
     public function systemMessages(): HasMany
     {

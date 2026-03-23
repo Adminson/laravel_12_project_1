@@ -33,5 +33,19 @@
     @endif
 </label>
 
-{{-- Example usage
- <x-form.input-label for="config_key" value="Configuration Key" :required="true" /> --}}
+{{-- 
+Example usage
+
+<x-form.input-label for="company_name" value="Company Name" :required="true" />
+
+<x-form.input-label for="config_key">
+    Configuration Key
+</x-form.input-label>
+
+<x-form.input-label
+    for="email"
+    value="Email Address"
+    class="fw-bold"
+    style="letter-spacing: .3px;"
+/>
+--}}

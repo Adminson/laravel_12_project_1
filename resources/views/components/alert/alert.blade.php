@@ -30,3 +30,20 @@
         @endif
     </div>
 @endif
+
+
+{{-- 
+Example usage
+
+<x-alert.alert type="success">
+    Company saved successfully.
+</x-alert.alert>
+
+<x-alert.alert type="danger" :dismissible="false">
+    Failed to save record.
+</x-alert.alert>
+
+<x-alert.alert type="warning" class="mt-3">
+    Please double check the required fields.
+</x-alert.alert>
+--}}

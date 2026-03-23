@@ -28,14 +28,27 @@
 </div>
 
 {{-- 
-Example Usage
+Example usage
 
 <x-card.card
     title="Configuration Profile"
-    :sub-title="'test Sub'"
-    :right-text="'today date is ' . now()->format('Y-m-d H:i:s')"
+    :sub-title="'Test Sub Title'"
+    :right-text="'Today: ' . now()->format('Y-m-d H:i:s')"
 >
-//content
+    ...
 </x-card.card>
 
+<x-card.card
+    title="Company Summary"
+    class="mb-4"
+>
+    ...
+</x-card.card>
+
+<x-card.card
+    title="Audit Trail"
+    :right-text="'Last updated by admin'"
+>
+    ...
+</x-card.card>
 --}}
