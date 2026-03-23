@@ -3,12 +3,12 @@
 @section('content')
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('setting.company.edit', $company->id) }}">
+            <a class="nav-link" href="{{ route('setting.company.edit', $company->cmp_id) }}">
                 Company Details
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="{{ route('setting.system_message.index', $company->id) }}">
+            <a class="nav-link active" href="{{ route('setting.system_message.index', $company->cmp_id) }}">
                 System Message
             </a>
         </li>
@@ -166,7 +166,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('setting.system_message.list', $company->id) }}',
+                    url: '{{ route('setting.system_message.list', $company->cmp_id) }}',
                     type: 'GET'
                 },
                 columns: [{
@@ -346,7 +346,7 @@
                     const id = $('#message_id').val();
                     const url = id ?
                         `/setting/system-message/item/${id}/update` :
-                        `{{ route('setting.system_message.store', $company->id) }}`;
+                        `{{ route('setting.system_message.store', $company->cmp_id) }}`;
 
                     appAjax({
                         url: url,

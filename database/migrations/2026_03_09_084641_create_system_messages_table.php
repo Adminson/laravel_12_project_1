@@ -10,8 +10,11 @@ return new class extends Migration
     {
         Schema::create('system_message', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_profile_id')
-                ->constrained('company_profile')
+
+            $table->unsignedBigInteger('company_profile_id');
+            $table->foreign('company_profile_id')
+                ->references('cmp_id')
+                ->on('company_profile')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 

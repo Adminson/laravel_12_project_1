@@ -3,13 +3,13 @@
 @section('content')
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link active" href="{{ $isEdit ? route('company_setting_edit', $company->id) : route('company_setting_create') }}">
+            <a class="nav-link active" href="{{ $isEdit ? route('company_setting_edit', $company->cmp_id) : route('company_setting_create') }}">
                 Company Details
             </a>
         </li>
         @if ($isEdit)
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('setting.system_message.index', $company->id) }}">
+                <a class="nav-link" href="{{ route('setting.system_message.index', $company->cmp_id) }}">
                     System Message
                 </a>
             </li>
@@ -198,7 +198,7 @@
                     const formData = new FormData(form);
 
                     appAjax({
-                        url: '{{ $isEdit ? route('company_setting_update', $company->id) : route('company_setting_store') }}',
+                        url: '{{ $isEdit ? route('company_setting_update', $company->cmp_id) : route('company_setting_store') }}',
                         method: 'POST',
                         data: formData,
                         onSuccess: function(res) {

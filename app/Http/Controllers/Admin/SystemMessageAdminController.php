@@ -83,7 +83,7 @@ class SystemMessageAdminController extends Controller
         DB::beginTransaction();
         try {
             $message = new SystemMessage();
-            $this->saveMessageData($message, $companyProfile->id, $validated, $request);
+            $this->saveMessageData($message, $companyProfile->cmp_id, $validated, $request);
 
             DB::commit();
 

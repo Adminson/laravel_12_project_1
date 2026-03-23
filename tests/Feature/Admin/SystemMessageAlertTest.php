@@ -29,7 +29,7 @@ class SystemMessageAlertTest extends TestCase
             ]);
 
             SystemMessage::create([
-                'company_profile_id' => $company->id,
+                'company_profile_id' => $company->cmp_id,
                 'title' => 'Blue Active',
                 'description' => 'Best 1 {{date1}} to {{date2}}',
                 'type' => 'blue',
@@ -38,7 +38,7 @@ class SystemMessageAlertTest extends TestCase
             ]);
 
             SystemMessage::create([
-                'company_profile_id' => $company->id,
+                'company_profile_id' => $company->cmp_id,
                 'title' => 'Red Active',
                 'description' => 'Red active description',
                 'type' => 'red',
@@ -47,7 +47,7 @@ class SystemMessageAlertTest extends TestCase
             ]);
 
             SystemMessage::create([
-                'company_profile_id' => $company->id,
+                'company_profile_id' => $company->cmp_id,
                 'title' => 'Orange Active',
                 'description' => 'Orange active description',
                 'type' => 'orange',
@@ -56,7 +56,7 @@ class SystemMessageAlertTest extends TestCase
             ]);
 
             SystemMessage::create([
-                'company_profile_id' => $company->id,
+                'company_profile_id' => $company->cmp_id,
                 'title' => 'Future Message',
                 'description' => 'Should not be visible',
                 'type' => 'blue',
@@ -65,7 +65,7 @@ class SystemMessageAlertTest extends TestCase
             ]);
 
             SystemMessage::create([
-                'company_profile_id' => $company->id,
+                'company_profile_id' => $company->cmp_id,
                 'title' => 'Expired Message',
                 'description' => 'Should not be visible',
                 'type' => 'red',
@@ -74,7 +74,7 @@ class SystemMessageAlertTest extends TestCase
             ]);
 
             SystemMessage::create([
-                'company_profile_id' => $company->id,
+                'company_profile_id' => $company->cmp_id,
                 'title' => 'Missing Date Message',
                 'description' => 'Should not be visible',
                 'type' => 'orange',
@@ -91,7 +91,7 @@ class SystemMessageAlertTest extends TestCase
                 'end_date' => now()->addHour(),
             ]);
 
-            $response = $this->actingAs($user)->get('/admin/system-message/' . $company->id);
+            $response = $this->actingAs($user)->get('/admin/system-message/' . $company->cmp_id);
 
             $response->assertOk();
             $response->assertSeeInOrder([
