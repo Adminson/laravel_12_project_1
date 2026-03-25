@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CompanyAdminController;
+use App\Http\Controllers\Admin\MemoController;
 use App\Http\Controllers\Admin\SelectInputListAdminController;
 use App\Http\Controllers\Admin\SystemMessageAdminController;
 use App\Http\Controllers\Admin\UiConfigurationController;
@@ -67,13 +68,16 @@ Route::prefix('setting')
         Route::prefix('system-message')
             ->name('system_message.')
             ->group(function () {
-                Route::get('/{company_profile}', [SystemMessageAdminController::class, 'index'])->name('index'); //setting.system_message.index
+                Route::get('/{company_profile}', [SystemMessageAdminController::class, 'index'])->name('index');
                 Route::get('/{company_profile}/list', [SystemMessageAdminController::class, 'list'])->name('list');
 
+                Route::get('/{company_profile}/create', [SystemMessageAdminController::class, 'create'])->name('create');
                 Route::post('/{company_profile}/store', [SystemMessageAdminController::class, 'store'])->name('store');
-                Route::get('/item/{system_message}', [SystemMessageAdminController::class, 'show'])->name('show');
-                Route::post('/item/{system_message}/update', [SystemMessageAdminController::class, 'update'])->name('update');
-                Route::delete('/item/{system_message}', [SystemMessageAdminController::class, 'destroy'])->name('delete');
+
+                Route::get('/{company_profile}/{system_message}/edit', [SystemMessageAdminController::class, 'edit'])->name('edit');
+                Route::put('/{company_profile}/{system_message}/update', [SystemMessageAdminController::class, 'update'])->name('update');
+
+                Route::delete('/{company_profile}/{system_message}', [SystemMessageAdminController::class, 'destroy'])->name('delete');
             });
 
         /*
@@ -109,6 +113,13 @@ Route::prefix('setting')
                 Route::post('/store', [SelectInputListAdminController::class, 'store'])->name('store');
                 Route::put('/{select_input_list}/update', [SelectInputListAdminController::class, 'update'])->name('update');
                 Route::delete('/{select_input_list}', [SelectInputListAdminController::class, 'delete'])->name('delete');
+            });
+
+        Route::prefix('memos')
+            ->name('memos.')
+            ->group(function () {
+                Route::post('/store', [MemoController::class, 'store'])->name('store');
+                Route::delete('/{memo}', [MemoController::class, 'destroy'])->name('destroy');
             });
     });
 

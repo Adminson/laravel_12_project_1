@@ -90,6 +90,24 @@
         rel="stylesheet"
         href="{{ asset('vuexy/assets/vendor/libs/select2/select2.css') }}"
     >
+    {{-- highlight --}}
+    <link
+        rel="stylesheet"
+        href="{{ asset('vuexy/assets/vendor/libs/highlight/highlight.css') }}"
+    >
+    {{-- Quill --}}
+    <link
+        rel="stylesheet"
+        href="{{ asset('vuexy/assets/vendor/libs/quill/typography.css') }}"
+    >
+    <link
+        rel="stylesheet"
+        href="{{ asset('vuexy/assets/vendor/libs/quill/katex.css') }}"
+    >
+    <link
+        rel="stylesheet"
+        href="{{ asset('vuexy/assets/vendor/libs/quill/editor.css') }}"
+    >
     @stack('styles')
 </head>
 
@@ -371,6 +389,12 @@
     <script src="{{ asset('vuexy/assets/vendor/libs/sweetalert2/sweetalert2.js') }}"></script>
     {{-- select2 --}}
     <script src="{{ asset('vuexy/assets/vendor/libs/select2/select2.js') }}"></script>
+    {{-- highlight --}}
+    <script src="{{ asset('vuexy/assets/vendor/libs/highlight/highlight.js') }}"></script>
+
+    {{-- Quill --}}
+    <script src="{{ asset('vuexy/assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('vuexy/assets/vendor/libs/quill/quill.js') }}"></script>
     @vite(['resources/js/app.js'])
     <!-- CSRF for jQuery AJAX -->
     <script>

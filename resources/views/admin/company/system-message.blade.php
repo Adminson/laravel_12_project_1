@@ -97,7 +97,7 @@
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Message Type</label>
+                                <label class="form-label">Message/Alert Type</label>
                                 <select name="type" id="type" class="form-select">
                                     <option value="blue">Blue</option>
                                     <option value="orange">Orange</option>

@@ -181,6 +181,7 @@
                             :value="$configuration->modal_frame_width ?? ''"
                             min="0"
                             :required="true"
+                            secondText="px"
                         />
                     </div>
 
@@ -197,6 +198,7 @@
                             :value="$configuration->modal_frame_height ?? ''"
                             min="0"
                             :required="true"
+                            secondText="px"
                         />
                     </div>
 
@@ -252,6 +254,7 @@
                             :value="$configuration->label_font_size ?? ''"
                             min="1"
                             :required="true"
+                            secondText="px"
                         />
                     </div>
 
@@ -338,6 +341,7 @@
                             :value="$configuration->input_font_size ?? ''"
                             min="1"
                             :required="true"
+                            secondText="px"
                         />
                         @error('input_font_size')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -374,6 +378,7 @@
                             :value="$configuration->input_margin ?? ''"
                             min="0"
                             :required="true"
+                            secondText="px"
                         />
                     </div>
 

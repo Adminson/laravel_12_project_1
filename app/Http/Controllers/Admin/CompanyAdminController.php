@@ -56,6 +56,10 @@ class CompanyAdminController extends Controller
 
     public function edit(CompanyProfile $companyProfile)
     {
+        $companyProfile->load('memos');
+
+        // dd($companyProfile);
+
         return view('admin.company.form', [
             'company' => $companyProfile,
             'isEdit' => true,

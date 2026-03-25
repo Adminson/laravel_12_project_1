@@ -7,6 +7,7 @@
     'required' => false,
     'readonly' => false,
     'disabled' => false,
+    'secondText' => '',
 ])
 
 @php
@@ -37,7 +38,7 @@
         {{ $attributes->except('style')->class(['form-control', 'is-invalid' => $errors->has($fieldNameDot)]) }}
         style="{{ $finalStyle }}"
     >
-    <span class="input-group-text">px</span>
+    <span class="input-group-text">{{ $secondText }}</span>
 </div>
 @error($fieldNameDot)
     <div class="invalid-feedback d-block">{{ $message }}</div>

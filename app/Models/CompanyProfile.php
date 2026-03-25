@@ -76,7 +76,7 @@ class CompanyProfile extends Model
 
     public function systemMessages(): HasMany
     {
-        return $this->hasMany(SystemMessage::class, 'company_profile_id', 'cmp_id');
+        return $this->hasMany(SystemMessage::class, 'msg_company_profile_id', 'cmp_id');
     }
 
     public function getLogoUrlAttribute(): ?string

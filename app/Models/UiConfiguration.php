@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class UiConfiguration extends Model
 {
+    protected $table = 'ui_configurations';
+
     protected $fillable = [
         'config_key',
         'config_name',
@@ -45,8 +47,8 @@ class UiConfiguration extends Model
         return [
             'is_active' => true,
 
-            'date_format' => 'uk_dmy',
-            'time_format' => '24h_2359',
+            'date_format' => 'd-m-Y',
+            'time_format' => 'h:i:s A',
             'date_separator' => '-',
             'currency_symbol' => '',
             'search_wildcard_enabled' => true,
@@ -66,5 +68,21 @@ class UiConfiguration extends Model
             'input_color' => 'gray_75',
             'input_margin' => 8,
         ];
+    }
+
+
+    public function getResolvedDateFormatAttribute(): string
+    {
+        $dateFormat = $this->date_format ?: 'Y-m-d';
+        $dateSeparator = $this->date_separator ?: '-';
+
+        return str_replace(['-', '/', '.'], $dateSeparator, $dateFormat);
+    }
+
+    public function getResolvedDateTimeFormatAttribute(): string
+    {
+        $timeFormat = $this->time_format ?: 'H:i';
+
+        return trim($this->resolved_date_format . ' ' . $timeFormat);
     }
 }

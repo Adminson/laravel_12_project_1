@@ -169,9 +169,7 @@
 
             {{-- Row 2 : Header & Footer | Parameters for PDF --}}
             <div class="col-12 col-xl-6">
-                <x-card.section-card
-                    title="Header & Footer"
-                >
+                <x-card.section-card title="Header & Footer">
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <x-form.input-label
@@ -300,7 +298,6 @@
                 <x-card.section-card
                     title="Subscription"
                     :badge="$subscriptionBadge"
-                    
                 >
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -342,6 +339,16 @@
             </div>
 
             {{-- Row 4 : Memo --}}
+            @if ($isEdit)
+                <div class="col-12">
+                    @include('admin.memo._memo-panel', [
+                        'title' => 'Memo / Notes',
+                        'memoableType' => 'company',
+                        'memoableId' => $company->cmp_id,
+                        'memos' => $company->memos,
+                    ])
+                </div>
+            @endif
             {{-- Row 5 : System Info --}}
             @if ($isEdit)
                 <div class="col-12">

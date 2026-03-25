@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('memoable_id');
 
             // Memo content
-            $table->text('content');
+            $table->longText('content');
 
             // Audit
             $table->string('created_by', 150)->nullable();
