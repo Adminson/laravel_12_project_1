@@ -13,10 +13,12 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\SystemMessageAlertFormatter;
 
 class SystemMessageAdminController extends Controller
 {
-    public function index(CompanyProfile $companyProfile)
+
+    public function index(CompanyProfile $companyProfile, SystemMessageAlertFormatter $alertFormatter)
     {
         $now = now();
 
@@ -24,61 +26,88 @@ class SystemMessageAdminController extends Controller
             ->whereNotNull('msg_start_date')
             ->whereNotNull('msg_end_date')
             ->latest('msg_id')
-            ->get();
+            ->get()
+            ->filter(fn(SystemMessage $systemMessage) => $systemMessage->isAlertActive($now))
+            ->values();
+
+        $formattedAlertMessages = $alertFormatter->formatCollection(
+            $activeSystemMessages,
+            $companyProfile
+        );
 
         return view('admin.company.system-message.index', [
             'company' => $companyProfile,
             'activeSystemMessages' => $activeSystemMessages,
+            'formattedAlertMessages' => $formattedAlertMessages,
         ]);
     }
 
-
-    public function list(Request $request, CompanyProfile $companyProfile): JsonResponse
+    public function list(Request $request, CompanyProfile $companyProfile, SystemMessageAlertFormatter $alertFormatter): JsonResponse
     {
-        $query = $companyProfile->systemMessages()->latest('msg_id');
+        $systemMessages = $companyProfile->systemMessages()
+            ->latest('msg_id')
+            ->get()
+            ->values();
 
-        return DataTables::eloquent($query)
-            ->addIndexColumn()
-            ->editColumn('msg_description', function ($row) {
-                return Str::limit(strip_tags($row->msg_description), 100);
-            })
-            ->editColumn('msg_suspend_login', function ($row) {
-                return $row->msg_suspend_login ? 'Yes' : 'No';
-            })
-            ->editColumn('msg_start_date', function ($row) {
-                return optional($row->msg_start_date)->format('d-M-Y h:i A');
-            })
-            ->editColumn('msg_end_date', function ($row) {
-                return optional($row->msg_end_date)->format('d-M-Y h:i A');
-            })
-            ->editColumn('msg_enable_email', function ($row) {
-                return $row->msg_enable_email ? 'Yes' : 'No';
-            })
-            ->editColumn('msg_email', function ($row) {
-                return !empty($row->msg_email) ? implode(';', $row->msg_email) : '';
-            })
-            ->addColumn('action', function ($row) use ($companyProfile) {
-                $editUrl = route('setting.system_message.edit', [
-                    'company_profile' => $companyProfile->cmp_id,
-                    'system_message' => $row->msg_id,
-                ]);
+        $data = $systemMessages->map(function ($row, $index) use ($companyProfile, $alertFormatter) {
+            $editUrl = route('setting.system_message.edit', [
+                'company_profile' => $companyProfile->cmp_id,
+                'system_message' => $row->msg_id,
+            ]);
 
-                $deleteUrl = route('setting.system_message.delete', [
-                    'company_profile' => $companyProfile->cmp_id,
-                    'system_message' => $row->msg_id,
-                ]);
+            $deleteUrl = route('setting.system_message.delete', [
+                'company_profile' => $companyProfile->cmp_id,
+                'system_message' => $row->msg_id,
+            ]);
 
-                return '
-                    <a href="' . $editUrl . '" class="btn btn-sm btn-warning">Edit</a>
-                    <button type="button"
-                        class="btn btn-sm btn-danger btn-delete-message"
-                        data-url="' . $deleteUrl . '">
-                        Delete
-                    </button>
-                ';
-            })
-            ->rawColumns(['action'])
-            ->toJson();
+            $formattedAlert = $alertFormatter->format($row, $companyProfile);
+
+            $messageHtml = '
+            <div class="system-message-alert-wrapper">
+                <div class="system-message-alert-title">' . e($formattedAlert['title'] ?? $row->msg_title) . '</div>
+
+                <div class="alert ' . e($formattedAlert['style_class'] ?? 'alert-primary') . ' d-flex align-items-center mb-2 system-message-alert-box" role="alert">
+                    <span class="alert-icon rounded me-2">
+                        <i class="icon-base ti ' . e($formattedAlert['style_icon'] ?? 'ti-info-circle') . ' icon-md"></i>
+                    </span>
+
+                    <div class="flex-grow-1">
+                        ' . ($formattedAlert['formatted_description'] ?? e($row->msg_description)) . '
+                    </div>
+                </div>
+
+                <div class="small text-muted system-message-alert-meta">
+                    Show From: ' . e($formattedAlert['show_from_text'] ?? (optional($row->msg_start_date)->format('d/m/Y h:i A') ?: '-')) . '<br>
+                    Show Until: ' . e($formattedAlert['show_until_text'] ?? (optional($row->msg_end_date)->format('d/m/Y h:i A') ?: '-')) . '
+                </div>
+            </div>
+        ';
+
+            return [
+                'DT_RowIndex' => $index + 1,
+                'message_html' => $messageHtml,
+                'msg_type' => $row->msg_type,
+                'msg_suspend_login' => $row->msg_suspend_login ? 'Yes' : 'No',
+                'msg_start_day' => $row->msg_start_day,
+                'msg_before_after' => $row->msg_before_after,
+                'msg_date_type' => $row->msg_date_type,
+                'msg_term' => $row->msg_term,
+                'msg_start_date' => optional($row->msg_start_date)->format('d-M-Y h:i A'),
+                'msg_end_date' => optional($row->msg_end_date)->format('d-M-Y h:i A'),
+                'action' => '
+                <a href="' . $editUrl . '" class="btn btn-sm btn-warning mb-1">Edit</a>
+                <button type="button"
+                    class="btn btn-sm btn-danger btn-delete-message"
+                    data-url="' . $deleteUrl . '">
+                    Delete
+                </button>
+            ',
+            ];
+        });
+
+        return response()->json([
+            'data' => $data,
+        ]);
     }
 
     public function create(CompanyProfile $companyProfile)
@@ -120,7 +149,7 @@ class SystemMessageAdminController extends Controller
         }
     }
 
-    public function edit(CompanyProfile $companyProfile, SystemMessage $systemMessage)
+    public function editOld(CompanyProfile $companyProfile, SystemMessage $systemMessage)
     {
         abort_unless(
             (int) $systemMessage->msg_company_profile_id === (int) $companyProfile->cmp_id,
@@ -131,6 +160,29 @@ class SystemMessageAdminController extends Controller
             'company' => $companyProfile,
             'systemMessage' => $systemMessage,
             'isEdit' => true,
+        ]);
+    }
+
+    public function edit(
+        CompanyProfile $companyProfile,
+        SystemMessage $systemMessage,
+        SystemMessageAlertFormatter $alertFormatter
+    ) {
+        abort_unless(
+            (int) $systemMessage->msg_company_profile_id === (int) $companyProfile->cmp_id,
+            404
+        );
+
+        $formattedAlertMessages = $alertFormatter->formatCollection(
+            collect([$systemMessage]),
+            $companyProfile
+        );
+
+        return view('admin.company.system-message.edit', [
+            'company' => $companyProfile,
+            'systemMessage' => $systemMessage,
+            'isEdit' => true,
+            'formattedAlertMessages' => $formattedAlertMessages,
         ]);
     }
 

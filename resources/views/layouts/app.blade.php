@@ -108,6 +108,22 @@
         rel="stylesheet"
         href="{{ asset('vuexy/assets/vendor/libs/quill/editor.css') }}"
     >
+
+    <style>
+        .form-control[readonly],
+        .form-control:read-only {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #6c757d !important;
+            opacity: 1;
+            cursor: not-allowed;
+        }
+
+        .form-control[readonly]::placeholder,
+        .form-control:read-only::placeholder {
+            color: #6c757d !important;
+        }
+    </style>
     @stack('styles')
 </head>
 
@@ -237,7 +253,8 @@
                                             class="dropdown-item"
                                             href="#"
                                         >
-                                            <i class="icon-base ti tabler-user icon-md me-3"></i><span>My Profile</span>
+                                            <i class="icon-base ti tabler-user icon-md me-3"></i><span>My
+                                                Profile</span>
                                         </a>
                                     </li>
                                     <li>

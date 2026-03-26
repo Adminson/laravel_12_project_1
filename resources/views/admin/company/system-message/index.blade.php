@@ -1,5 +1,50 @@
 @extends('layouts.app')
+@push('styles')
+    <style>
+        #systemMessageTable {
+            width: 100% !important;
+        }
 
+        #systemMessageTable thead th {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        #systemMessageTable tbody td {
+            vertical-align: top !important;
+        }
+
+        #systemMessageTable .message-cell {
+            min-width: 380px;
+            max-width: 520px;
+        }
+
+        .system-message-alert-wrapper {
+            min-width: 300px;
+        }
+
+        .system-message-alert-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #ff4d4f;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .system-message-alert-box {
+            margin-bottom: 8px !important;
+        }
+
+        .system-message-alert-meta {
+            line-height: 1.45;
+        }
+
+        .system-message-action .btn {
+            min-width: 70px;
+            margin-bottom: 6px;
+        }
+    </style>
+@endpush
 @section('content')
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
@@ -38,105 +83,54 @@
             <x-alert.alert-session />
 
             <table
-                class="table table-bordered"
+                class="table table-bordered align-middle"
                 id="systemMessageTable"
             >
                 <thead>
                     <tr>
-                        <th width="60">#</th>
-                        <th>Title</th>
-                        <th>Type</th>
+                        <th width="70">No</th>
+                        <th width="420">Message</th>
                         <th>Suspend Login</th>
-                        <th>Start</th>
+                        <th>Alert Start</th>
                         <th>Before / After</th>
                         <th>Date Type</th>
                         <th>Term</th>
                         <th>Date 1</th>
                         <th>Date 2</th>
-                        <th>Email Enabled</th>
-                        <th>Email</th>
-                        <th>Version</th>
-                        <th>Hit</th>
-                        <th width="180">Action</th>
+                        <th width="160">Action</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
             </table>
-
-            @if ($activeSystemMessages->isNotEmpty())
-                @php
-                    $alertStyles = [
-                        'blue' => ['class' => 'alert-solid-success', 'icon' => 'tabler-check'],
-                        'red' => ['class' => 'alert-solid-danger', 'icon' => 'tabler-ban'],
-                        'orange' => ['class' => 'alert-solid-warning', 'icon' => 'tabler-bell'],
-                    ];
-                @endphp
-
-                <div class="mt-4">
-                    @foreach ($activeSystemMessages as $systemMessage)
-                        @php
-                            $alertStyle = $alertStyles[$systemMessage->msg_type] ?? $alertStyles['blue'];
-
-                            $formattedDescription = str_replace(
-                                ['[date1]', '[date2]', '[program]', '{{ date1 }}', '{{ date2 }}', '{{ program }}'],
-                                [
-                                    optional($systemMessage->msg_start_date)->format('d-M-Y h:i A'),
-                                    optional($systemMessage->msg_end_date)->format('d-M-Y h:i A'),
-                                    $company->cmp_company_name,
-                                    optional($systemMessage->msg_start_date)->format('d-M-Y h:i A'),
-                                    optional($systemMessage->msg_end_date)->format('d-M-Y h:i A'),
-                                    $company->cmp_company_name,
-                                ],
-                                $systemMessage->msg_description
-                            );
-                        @endphp
-
-                        <div
-                            class="alert {{ $alertStyle['class'] }} d-flex align-items-center mb-3"
-                            role="alert"
-                        >
-                            <span class="alert-icon rounded">
-                                <i class="icon-base ti {{ $alertStyle['icon'] }} icon-md"></i>
-                            </span>
-
-                            <div>
-                                <strong>{{ $systemMessage->msg_title }}</strong>
-                                <div>{!! $formattedDescription !!}</div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
         </div>
     </div>
 @endsection
-
 @push('scripts')
     <script>
-        let systemMessageTable;
-
         $(function() {
-            systemMessageTable = $('#systemMessageTable').DataTable({
+            const table = $('#systemMessageTable').DataTable({
                 processing: true,
-                serverSide: true,
+                serverSide: false,
+                searching: true,
+                ordering: true,
+                responsive: false,
+                autoWidth: false,
                 ajax: {
                     url: '{{ route('setting.system_message.list', $company->cmp_id) }}',
                     type: 'GET'
                 },
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
+                        className: 'text-center align-middle',
                         orderable: false,
                         searchable: false
                     },
                     {
-                        data: 'msg_title',
-                        name: 'msg_title'
-                    },
-                    {
-                        data: 'msg_type',
-                        name: 'msg_type'
+                        data: 'message_html',
+                        name: 'message_html',
+                        orderable: false,
+                        searchable: true,
+                        className: 'message-cell'
                     },
                     {
                         data: 'msg_suspend_login',
@@ -167,30 +161,20 @@
                         name: 'msg_end_date'
                     },
                     {
-                        data: 'msg_enable_email',
-                        name: 'msg_enable_email'
-                    },
-                    {
-                        data: 'msg_email',
-                        name: 'msg_email',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'msg_version',
-                        name: 'msg_version'
-                    },
-                    {
-                        data: 'msg_hit',
-                        name: 'msg_hit'
-                    },
-                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        className: 'text-center align-middle system-message-action'
                     }
-                ]
+                ],
+                order: [
+                    [0, 'asc']
+                ],
+                pageLength: 10,
+                language: {
+                    emptyTable: 'No system messages found.'
+                }
             });
 
             $(document).on('click', '.btn-delete-message', function() {
@@ -214,12 +198,13 @@
                                 icon: 'success'
                             });
 
-                            systemMessageTable.ajax.reload(null, false);
+                            table.ajax.reload(null, false);
                         },
                         onError: function(xhr) {
                             Swal.fire({
                                 title: 'Error',
-                                text: xhr.responseJSON?.message || 'Delete failed.',
+                                text: xhr.responseJSON?.message ||
+                                    'Delete failed.',
                                 icon: 'error'
                             });
                         }

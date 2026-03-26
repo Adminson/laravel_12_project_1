@@ -87,7 +87,7 @@
                 <div class="col-md-4 mb-3">
                     <x-form.input-label
                         for="msg_start_day"
-                        value="Start Days"
+                        value="Start"
                         :required="true"
                     />
 
@@ -435,12 +435,12 @@
         function toggleEmailInput() {
             const enableEmail = $('#msg_enable_email').is(':checked');
 
-            $('#msg_email').prop('disabled', !enableEmail);
-            $('#msg_email_date').prop('disabled', !enableEmail);
+            $('#msg_email').prop('readonly', !enableEmail);
+            $('#msg_email_date').prop('readonly', !enableEmail);
 
             if (!enableEmail) {
-                $('#msg_email').val('');
-                $('#msg_email_date').val('');
+                // $('#msg_email').val('');
+                // $('#msg_email_date').val('');
             }
         }
 

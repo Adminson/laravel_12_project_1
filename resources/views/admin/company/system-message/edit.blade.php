@@ -33,6 +33,32 @@
         </x-ui.link>
     </div>
     <x-alert.alert-session />
+    @if ($formattedAlertMessages->isNotEmpty())
+        <div class="mt-4">
+            @foreach ($formattedAlertMessages as $alertMessage)
+                <strong class="text-danger">{{ $alertMessage['title'] }}</strong>
+                <div
+                    class="alert {{ $alertMessage['style_class'] }} d-flex align-items-center mb-3"
+                    role="alert"
+                >
+                    <span class="alert-icon rounded">
+                        <i class="icon-base ti {{ $alertMessage['style_icon'] }} icon-md"></i>
+                    </span>
+
+                    <div>
+
+                        <div>{!! $alertMessage['formatted_description'] !!}</div>
+                    </div>
+                </div>
+                <div class="small text-muted mt-1">
+                    Show From: {{ $alertMessage['show_from_text'] }}
+                    <br>
+                    Show Until: {{ $alertMessage['show_until_text'] }}
+                </div>
+                <br />
+            @endforeach
+        </div>
+    @endif
     <form
         action="{{ route('setting.system_message.update', [
             'company_profile' => $company->cmp_id,
