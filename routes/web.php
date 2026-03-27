@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\SystemMessageAdminController;
 use App\Http\Controllers\Admin\UiConfigurationController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -120,6 +121,20 @@ Route::prefix('setting')
             ->group(function () {
                 Route::post('/store', [MemoController::class, 'store'])->name('store');
                 Route::delete('/{memo}', [MemoController::class, 'destroy'])->name('destroy');
+            });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Audit Logs
+        |--------------------------------------------------------------------------
+        */
+        Route::prefix('audit')
+            ->name('audit.')
+            ->group(function () {
+                Route::get('/audit-list/{id}/{type}', [AuditLogController::class, 'list'])->name('audit-list');
+
+                Route::get('/audit-full-list', [AuditLogController::class, 'fullList'])->name('audit-full-list');
+                Route::get('/audit-full-list-data', [AuditLogController::class, 'fullListData'])->name('audit-full-list-data');
             });
     });
 

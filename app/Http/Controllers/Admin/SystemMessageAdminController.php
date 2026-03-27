@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CompanyProfile;
 use App\Models\SystemMessage;
+use App\Services\Audit\AuditLogFormatter;
+use App\Services\SystemMessageAlertFormatter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,18 +15,33 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Yajra\DataTables\Facades\DataTables;
-use App\Services\SystemMessageAlertFormatter;
 
 class SystemMessageAdminController extends Controller
 {
+
+    public function auditList(
+        Request $request,
+        CompanyProfile $companyProfile,
+        AuditLogFormatter $formatter
+    ): JsonResponse {
+        $audits = $companyProfile->audits()
+            ->with('user')
+            ->latest()
+            ->get();
+
+        $rows = $formatter->formatCollection($audits);
+
+        return response()->json([
+            'data' => $rows,
+        ]);
+    }
 
     public function index(CompanyProfile $companyProfile, SystemMessageAlertFormatter $alertFormatter)
     {
         $now = now();
 
         $activeSystemMessages = $companyProfile->systemMessages()
-            ->whereNotNull('msg_start_date')
-            ->whereNotNull('msg_end_date')
+            ->with('companyProfile')
             ->latest('msg_id')
             ->get()
             ->filter(fn(SystemMessage $systemMessage) => $systemMessage->isAlertActive($now))
@@ -45,6 +62,7 @@ class SystemMessageAdminController extends Controller
     public function list(Request $request, CompanyProfile $companyProfile, SystemMessageAlertFormatter $alertFormatter): JsonResponse
     {
         $systemMessages = $companyProfile->systemMessages()
+            ->with('companyProfile')
             ->latest('msg_id')
             ->get()
             ->values();
@@ -86,7 +104,8 @@ class SystemMessageAdminController extends Controller
             return [
                 'DT_RowIndex' => $index + 1,
                 'message_html' => $messageHtml,
-                'msg_type' => $row->msg_type,
+                'msg_date_reference' => $row->msg_date_reference,
+                'msg_color' => $row->msg_color,
                 'msg_suspend_login' => $row->msg_suspend_login ? 'Yes' : 'No',
                 'msg_start_day' => $row->msg_start_day,
                 'msg_before_after' => $row->msg_before_after,
@@ -253,7 +272,8 @@ class SystemMessageAdminController extends Controller
         return $request->validate([
             'msg_title' => ['required', 'string', 'max:255'],
             'msg_description' => ['required', 'string'],
-            'msg_type' => ['required', Rule::in(['blue', 'orange', 'red'])],
+            'msg_date_reference' => ['required', Rule::in(['message_date', 'subscribe_date'])],
+            'msg_color' => ['required', Rule::in(['blue', 'orange', 'red'])],
 
             'msg_suspend_login' => ['required', 'boolean'],
             'msg_start_day' => ['nullable', 'string', 'max:50'],
@@ -280,7 +300,8 @@ class SystemMessageAdminController extends Controller
         $message->msg_company_profile_id = $companyProfileId;
         $message->msg_title = $validated['msg_title'];
         $message->msg_description = $validated['msg_description'];
-        $message->msg_type = $validated['msg_type'];
+        $message->msg_date_reference = $validated['msg_date_reference'];
+        $message->msg_color = $validated['msg_color'];
 
         $message->msg_suspend_login = $request->boolean('msg_suspend_login');
         $message->msg_start_day = $validated['msg_start_day'] ?? null;

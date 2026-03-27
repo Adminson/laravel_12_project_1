@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-
-class Memo extends Model
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+class Memo extends Model implements AuditableContract
 {
+    use Auditable;
     protected $table = 'memos';
 
     protected $fillable = [

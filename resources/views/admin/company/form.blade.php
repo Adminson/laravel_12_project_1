@@ -449,9 +449,18 @@
             </div>
         </div>
     </form>
+
+    @if (!empty($company))
+        @include('admin.audit.show', [
+            'auditId' => $company->cmp_id,
+            'auditType' => 'company',
+            'auditTitle' => 'Audit Log',
+        ])
+    @endif
 @endsection
 
 @push('scripts')
+ <script src="{{ asset('js/custom/audit_log_ajax.js') }}"></script>
     <script>
         function previewLogo(input) {
             const file = input.files[0];

@@ -90,7 +90,7 @@
                     <tr>
                         <th width="70">No</th>
                         <th width="420">Message</th>
-                        <th>Suspend Login</th>
+                        <th>Message Type</th>
                         <th>Alert Start</th>
                         <th>Before / After</th>
                         <th>Date Type</th>
@@ -133,8 +133,15 @@
                         className: 'message-cell'
                     },
                     {
-                        data: 'msg_suspend_login',
-                        name: 'msg_suspend_login'
+                        data: 'msg_date_reference',
+                        render: function(data, type, row, meta) {
+                            if (data == 'message_date') {
+                                return "Message Date";
+                            } else if (data == 'subscribe_date') {
+                                return "Subscribe Date";
+                            }
+                            return data;
+                        },
                     },
                     {
                         data: 'msg_start_day',

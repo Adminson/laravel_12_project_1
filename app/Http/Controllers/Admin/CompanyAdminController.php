@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyProfile;
+use App\Services\Audit\AuditLogFormatter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,23 @@ use Yajra\DataTables\Facades\DataTables;
 
 class CompanyAdminController extends Controller
 {
+        public function auditList(
+        Request $request,
+        CompanyProfile $companyProfile,
+        AuditLogFormatter $formatter
+    ): JsonResponse {
+        $audits = $companyProfile->audits()
+            ->with('user')
+            ->latest()
+            ->get();
+
+        $rows = $formatter->formatCollection($audits);
+
+        return response()->json([
+            'data' => $rows,
+        ]);
+    }
+    
     public function index()
     {
         return view('admin.company.index');

@@ -21,8 +21,11 @@ return new class extends Migration
 
             $table->string('msg_title', 255);
             $table->longText('msg_description');
-
-            $table->string('msg_type', 20)->default('blue');
+            $table->enum('msg_date_reference', [
+                'message_date',
+                'subscribe_date'
+            ])->default('message_date');
+            $table->string('msg_color', 20)->default('blue');
             $table->boolean('msg_suspend_login')->default(false);
 
             $table->string('msg_start_day', 50)->nullable();
@@ -39,18 +42,18 @@ return new class extends Migration
             $table->json('msg_email')->nullable();
 
             $table->dateTime('msg_createdon')->nullable();
-            $table->string('msg_createdby',150)->nullable();
+            $table->string('msg_createdby', 150)->nullable();
 
             $table->dateTime('msg_modifiedon')->nullable();
-            $table->string('msg_modifiedby',150)->nullable();
+            $table->string('msg_modifiedby', 150)->nullable();
 
             $table->unsignedInteger('msg_version')->default(1);
             $table->dateTime('msg_viewedon')->nullable();
-            $table->string('msg_viewedby',150)->nullable();
+            $table->string('msg_viewedby', 150)->nullable();
             $table->unsignedInteger('msg_hit')->default(0);
 
             $table->index(['msg_start_date', 'msg_end_date'], 'idx_msg_active_date');
-            $table->index(['msg_type'], 'idx_msg_type');
+            $table->index(['msg_date_reference'], 'idx_msg_date_reference');
             $table->index(['msg_enable_email'], 'idx_msg_enable_email');
         });
     }

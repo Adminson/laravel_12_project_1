@@ -20,43 +20,47 @@
                     />
                 </div>
 
-                <div class="col-md-12 mb-3">
+                <div class="col-md-4 mb-3">
                     <x-form.input-label
-                        for="msg_description"
-                        value="Description, special command: [date1], [date2], [program]"
-                        :required="true"
-                    />
-
-                    <x-form.input-quill
-                        name="msg_description"
-                        id="msg_description"
-                        :value="$systemMessage->msg_description ?? ''"
-                        placeholder="Write system message..."
-                        :required="true"
-                    />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <x-form.input-label
-                        for="msg_type"
-                        value="Message/Alert Type"
+                        for="msg_color"
+                        value="Alert Message Type"
                         :required="true"
                     />
 
                     <x-form.input-select
-                        name="msg_type"
-                        id="msg_type"
+                        name="msg_color"
+                        id="msg_color"
                         :options="[
-                            'blue' => 'Blue',
-                            'orange' => 'Orange',
-                            'red' => 'Red',
+                            'blue' => 'Message (Blue)',
+                            'orange' => 'Alert (Orange)',
+                            'red' => 'Warning (Red)',
                         ]"
-                        :value="$systemMessage->msg_type ?? 'blue'"
+                        :value="$systemMessage->msg_color ?? 'blue'"
                         :required="true"
                     />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+                    <x-form.input-label
+                        for="msg_date_reference"
+                        value="Date Reference"
+                        :required="true"
+                    />
+
+                    <x-form.input-select
+                        name="msg_date_reference"
+                        id="msg_date_reference"
+                        :options="[
+                            'message_date' => 'Message Date',
+                            'subscribe_date' => 'Subscribe Date',
+                        ]"
+                        :value="old('msg_date_reference', $systemMessage->msg_date_reference ?? 'message_date')"
+                        :required="true"
+                    />
+                </div>
+
+
+                <div class="col-md-4 mb-3">
                     <x-form.input-label
                         for="msg_suspend_login"
                         value="Suspend Login"
@@ -71,6 +75,22 @@
                             1 => 'Yes',
                         ]"
                         :value="(int) old('msg_suspend_login', $systemMessage->msg_suspend_login ?? 0)"
+                        :required="true"
+                    />
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <x-form.input-label
+                        for="msg_description"
+                        value="Description, special command: [date1], [date2], [program]"
+                        :required="true"
+                    />
+
+                    <x-form.input-quill
+                        name="msg_description"
+                        id="msg_description"
+                        :value="$systemMessage->msg_description ?? ''"
+                        placeholder="Write system message..."
                         :required="true"
                     />
                 </div>
@@ -116,7 +136,7 @@
                             'before' => 'Before',
                             'after' => 'After',
                         ]"
-                        :value="$systemMessage->msg_before_after ?? 'before'"
+                        :value="old('msg_before_after', $systemMessage->msg_before_after ?? 'before')"
                         :required="true"
                     />
                 </div>
@@ -135,7 +155,7 @@
                             'date1' => 'Date 1',
                             'date2' => 'Date 2',
                         ]"
-                        :value="$systemMessage->msg_date_type ?? 'date1'"
+                        :value="old('msg_date_type', $systemMessage->msg_date_type ?? 'date1')"
                         :required="true"
                     />
                 </div>
@@ -158,7 +178,6 @@
                     />
                 </div>
             </div>
-
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <x-form.input-label
@@ -220,6 +239,61 @@
                     />
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <div
+                        id="date_reference_preview"
+                        class="alert alert-outline-dark border small mb-0"
+                    >
+                        <div class="fw-semibold mb-2">Timing Preview</div>
+
+                        <div class="row g-2 small">
+                            <div class="col-md-6">
+                                <div>
+                                    <strong>Selected reference:</strong>
+                                    <span id="preview_reference_label">-</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div>
+                                    <strong>Reference datetime:</strong>
+                                    <span id="preview_reference_value">-</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div>
+                                    <strong>Show from:</strong>
+                                    <span id="preview_show_from">-</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div>
+                                    <strong>Show until:</strong>
+                                    <span id="preview_show_until">-</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div>
+                                    <strong>Rule:</strong>
+                                    <span id="preview_formula">-</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div
+                                    id="preview_warning"
+                                    class="text-danger fw-semibold"
+                                    style="display:none;"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </x-card.card>
     </div>
 </div>
@@ -231,7 +305,7 @@
             class="mt-0"
         >
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <x-form.checkbox
                         name="msg_enable_email"
                         id="msg_enable_email"
@@ -240,7 +314,7 @@
                     />
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <x-form.input-label
                         for="msg_last_date_sent_email"
                         value="Last Sent Email"
@@ -249,9 +323,25 @@
                     <x-form.input-text
                         name="msg_last_date_sent_email"
                         id="msg_last_date_sent_email"
-                        type="datetime-local"
-                        :value="optional($systemMessage->msg_last_date_sent_email)->format('Y-m-d\TH:i')"
+                        :value="$systemMessage->msg_last_date_sent_email ?? ''"
+                        readonly
                     />
+                    {{-- show msg_last_date_sent_email when last email sent as readonly --}}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <x-form.input-label
+                        for="resend_email_button"
+                        value="Resend Email"
+                    />
+                    <br/>
+                    <button
+                        id="resend_email_button"
+                        type="button"
+                        class="btn btn-primary"
+                    >
+                        Send Email
+                    </button>
                 </div>
             </div>
 
@@ -437,18 +527,161 @@
 
             $('#msg_email').prop('readonly', !enableEmail);
             $('#msg_email_date').prop('readonly', !enableEmail);
+        }
 
-            if (!enableEmail) {
-                // $('#msg_email').val('');
-                // $('#msg_email_date').val('');
+        function getSelectedReferenceConfig() {
+            const dateReference = $('#msg_date_reference').val();
+            const dateType = $('#msg_date_type').val();
+
+            if (dateReference === 'subscribe_date' && dateType === 'date1') {
+                return {
+                    label: 'Subscribe Start Date',
+                    selector: '#cmp_sub_start_date'
+                };
+            }
+
+            if (dateReference === 'subscribe_date' && dateType === 'date2') {
+                return {
+                    label: 'Subscribe End Date',
+                    selector: '#cmp_sub_end_date'
+                };
+            }
+
+            if (dateReference === 'message_date' && dateType === 'date1') {
+                return {
+                    label: 'Message Date 1',
+                    selector: '#msg_start_date'
+                };
+            }
+
+            if (dateReference === 'message_date' && dateType === 'date2') {
+                return {
+                    label: 'Message Date 2',
+                    selector: '#msg_end_date'
+                };
+            }
+
+            return {
+                label: '-',
+                selector: null
+            };
+        }
+
+        function parseDateTimeLocal(value) {
+            if (!value) {
+                return null;
+            }
+
+            const date = new Date(value);
+
+            if (isNaN(date.getTime())) {
+                return null;
+            }
+
+            return date;
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date.getTime());
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function formatDateTime(date) {
+            if (!date) {
+                return '-';
+            }
+
+            const pad = (num) => String(num).padStart(2, '0');
+
+            const day = pad(date.getDate());
+            const month = pad(date.getMonth() + 1);
+            const year = date.getFullYear();
+
+            let hours = date.getHours();
+            const minutes = pad(date.getMinutes());
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            return `${day}/${month}/${year} ${pad(hours)}:${minutes} ${ampm}`;
+        }
+
+        function updateDateReferencePreview() {
+            const config = getSelectedReferenceConfig();
+
+            const startDay = parseInt($('#msg_start_day').val(), 10) || 0;
+            const beforeAfter = ($('#msg_before_after').val() || 'before').toLowerCase();
+            const term = parseInt($('#msg_term').val(), 10) || 0;
+
+            const referenceRawValue = config.selector ? $(config.selector).val() : '';
+            const referenceDate = parseDateTimeLocal(referenceRawValue);
+
+            let showFrom = null;
+            let showUntil = null;
+            let formulaText = '-';
+            let warningText = '';
+
+            $('#preview_reference_label').text(config.label || '-');
+            $('#preview_reference_value').text(referenceDate ? formatDateTime(referenceDate) : '-');
+
+            if (!config.selector) {
+                warningText = 'Unable to determine selected reference date.';
+            } else if (!referenceDate) {
+                warningText = `${config.label} is empty. Please fill in the selected reference datetime first.`;
+            } else {
+                if (beforeAfter === 'after') {
+                    showFrom = addDays(referenceDate, startDay);
+                } else {
+                    showFrom = addDays(referenceDate, -startDay);
+                }
+
+                if (term > 0) {
+                    showUntil = addDays(showFrom, term);
+                }
+
+                formulaText =
+                    `Reference "${config.label}" ` +
+                    `${beforeAfter === 'after' ? '+' : '-'} ${startDay} day(s)` +
+                    `${term > 0 ? `, then + ${term} day(s) term` : ', term = 0 (until deleted)'}`;
+            }
+
+            $('#preview_show_from').text(showFrom ? formatDateTime(showFrom) : '-');
+            $('#preview_show_until').text(
+                showUntil ?
+                formatDateTime(showUntil) :
+                (referenceDate && term === 0 ? 'Until deleted' : '-')
+            );
+            $('#preview_formula').text(formulaText);
+
+            if (warningText) {
+                $('#preview_warning').text(warningText).show();
+            } else {
+                $('#preview_warning').hide().text('');
             }
         }
 
         $(function() {
             toggleEmailInput();
+            updateDateReferencePreview();
 
             $('#msg_enable_email').on('change', function() {
                 toggleEmailInput();
+            });
+
+            $(
+                '#msg_date_reference, ' +
+                '#msg_date_type, ' +
+                '#msg_before_after, ' +
+                '#msg_start_day, ' +
+                '#msg_term, ' +
+                '#msg_start_date, ' +
+                '#msg_end_date, ' +
+                '#cmp_sub_start_date, ' +
+                '#cmp_sub_end_date'
+            ).on('change input keyup', function() {
+                updateDateReferencePreview();
             });
 
             if (document.getElementById('msg_description_editor')) {
