@@ -10,10 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CompanyAdminController extends Controller
 {
-        public function auditList(
+    public function auditList(
         Request $request,
         CompanyProfile $companyProfile,
         AuditLogFormatter $formatter
@@ -29,7 +30,7 @@ class CompanyAdminController extends Controller
             'data' => $rows,
         ]);
     }
-    
+
     public function index()
     {
         return view('admin.company.index');
@@ -251,5 +252,74 @@ class CompanyAdminController extends Controller
         }
 
         $company->save();
+    }
+
+    public function testPdf(CompanyProfile $companyProfile)
+    {
+        
+        $allowedHeaderModes = ['logo_only', 'text_only', 'logo_and_text'];
+
+        $headerMode = in_array($companyProfile->cmp_pdf_header, $allowedHeaderModes, true)
+            ? $companyProfile->cmp_pdf_header
+            : 'logo_and_text';
+
+        $footerMode = $companyProfile->cmp_pdf_footer === 'hide'
+            ? 'hide'
+            : 'show';
+
+        $logoSizePercent = (int) ($companyProfile->cmp_logo_size ?? 12);
+        $logoSizePercent = max(1, min(100, $logoSizePercent));
+
+        $showHeader = in_array($headerMode, $allowedHeaderModes, true);
+        $showFooter = $footerMode === 'show';
+
+        $logoDataUri = $this->resolvePdfLogoDataUriFromCompany($companyProfile);
+
+        $pdf = Pdf::loadView('admin.company.pdf.test', [
+            'headerTitle' => $companyProfile->cmp_header_title ?? '',
+            'headerText' => $companyProfile->cmp_header_text ?? '',
+            'footerText' => $companyProfile->cmp_footer_text ?? '',
+            'contentText' => 'This a test',
+            'headerMode' => $headerMode,
+            'footerMode' => $footerMode,
+            'showHeader' => $showHeader,
+            'showFooter' => $showFooter,
+            'logoDataUri' => $logoDataUri,
+            'logoSizePercent' => $logoSizePercent,
+            'company' => $companyProfile,
+        ])->setPaper('a4', 'portrait');
+        // dd('1');
+        return $pdf->stream('company-' . $companyProfile->cmp_id . '-test.pdf');
+    }
+
+    protected function resolvePdfLogoDataUriFromCompany(CompanyProfile $companyProfile): ?string
+    {
+        if (empty($companyProfile->cmp_logo_path)) {
+            return null;
+        }
+
+        if (!Storage::disk('public')->exists($companyProfile->cmp_logo_path)) {
+            return null;
+        }
+
+        $absolutePath = Storage::disk('public')->path($companyProfile->cmp_logo_path);
+        $mimeType = mime_content_type($absolutePath) ?: 'image/png';
+
+        return $this->fileToDataUri($absolutePath, $mimeType);
+    }
+
+    protected function fileToDataUri(string $path, string $mimeType): ?string
+    {
+        if (!is_file($path)) {
+            return null;
+        }
+
+        $contents = file_get_contents($path);
+
+        if ($contents === false) {
+            return null;
+        }
+
+        return 'data:' . $mimeType . ';base64,' . base64_encode($contents);
     }
 }

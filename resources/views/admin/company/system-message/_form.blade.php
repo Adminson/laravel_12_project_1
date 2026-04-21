@@ -1,3 +1,49 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="mb-0">{{ $isEdit ? 'Edit' : 'Create' }} System Message</h4>
+    </div>
+    <div>
+        <x-ui.link
+            :href="route('setting.system_message.index', $company->cmp_id)"
+            variant="secondary"
+            class="me-1"
+        >
+            {{ $isEdit ? 'Back' : 'Cancel' }}
+        </x-ui.link>
+        <x-ui.button
+            type="submit"
+            variant="primary"
+        >
+            {{ $isEdit ? 'Update' : 'Save' }}
+        </x-ui.button>
+    </div>
+</div>
+@if ($formattedAlertMessages->isNotEmpty())
+    <div class="mt-4">
+        @foreach ($formattedAlertMessages as $alertMessage)
+            <strong class="text-danger">{{ $alertMessage['title'] }}</strong>
+            <div
+                class="alert {{ $alertMessage['style_class'] }} d-flex align-items-center mb-3"
+                role="alert"
+            >
+                <span class="alert-icon rounded">
+                    <i class="icon-base ti {{ $alertMessage['style_icon'] }} icon-md"></i>
+                </span>
+
+                <div>
+
+                    <div>{!! $alertMessage['formatted_description'] !!}</div>
+                </div>
+            </div>
+            <div class="small text-muted mt-1">
+                Show From: {{ $alertMessage['show_from_text'] }}
+                <br>
+                Show Until: {{ $alertMessage['show_until_text'] }}
+            </div>
+            <br />
+        @endforeach
+    </div>
+@endif
 <div class="row">
     <div class="col-md-6">
         <x-card.card
@@ -245,7 +291,7 @@
                         id="date_reference_preview"
                         class="alert alert-outline-dark border small mb-0"
                     >
-                        <div class="fw-semibold mb-2">Timing Preview</div>
+                        <div class="fw-semibold mb-2 text-primary">Timing Preview</div>
 
                         <div class="row g-2 small">
                             <div class="col-md-6">
@@ -323,7 +369,7 @@
                     <x-form.input-text
                         name="msg_last_date_sent_email"
                         id="msg_last_date_sent_email"
-                        :value="$systemMessage->msg_last_date_sent_email ?? ''"
+                        :value="optional($systemMessage->msg_last_date_sent_email)->format('d-M-Y h:i:s A')"
                         readonly
                     />
                     {{-- show msg_last_date_sent_email when last email sent as readonly --}}
@@ -334,11 +380,13 @@
                         for="resend_email_button"
                         value="Resend Email"
                     />
-                    <br/>
+                    <br />
                     <button
                         id="resend_email_button"
                         type="button"
                         class="btn btn-primary"
+                        data-url="{{ $isEdit ? route('setting.system_message.resend_email', ['company_profile' => $company->cmp_id, 'system_message' => $systemMessage->msg_id]) : '' }}"
+                        @disabled(!$isEdit)
                     >
                         Send Email
                     </button>
@@ -379,146 +427,197 @@
                     </small>
                 </div>
             </div>
-        </x-card.card>
-    </div>
 
-    <div class="col-md-6">
-        <x-card.card
-            title="Audit"
-            class="mt-0"
-        >
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <x-form.input-label
-                        for="msg_version"
-                        value="Version"
-                    />
-
-                    <x-form.input-text
-                        name="msg_version"
-                        id="msg_version"
-                        :value="$systemMessage->msg_version ?? 1"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <x-form.input-label
-                        for="msg_hit"
-                        value="Hit"
-                    />
-
-                    <x-form.input-text
-                        name="msg_hit"
-                        id="msg_hit"
-                        :value="$systemMessage->msg_hit ?? 0"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <x-form.input-label
-                        for="msg_viewedby"
-                        value="Viewed By"
-                    />
-
-                    <x-form.input-text
-                        name="msg_viewedby"
-                        id="msg_viewedby"
-                        :value="$systemMessage->msg_viewedby ?? ''"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <x-form.input-label
-                        for="msg_createdon"
-                        value="Created On"
-                    />
-
-                    <x-form.input-text
-                        name="msg_createdon"
-                        id="msg_createdon"
-                        :value="optional($systemMessage->msg_createdon)->format('d-M-Y H:i:s')"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <x-form.input-label
-                        for="msg_modifiedon"
-                        value="Modified On"
-                    />
-
-                    <x-form.input-text
-                        name="msg_modifiedon"
-                        id="msg_modifiedon"
-                        :value="optional($systemMessage->msg_modifiedon)->format('d-M-Y H:i:s')"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <x-form.input-label
-                        for="msg_viewedon"
-                        value="Viewed On"
-                    />
-
-                    <x-form.input-text
-                        name="msg_viewedon"
-                        id="msg_viewedon"
-                        :value="optional($systemMessage->msg_viewedon)->format('d-M-Y H:i:s')"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <x-form.input-label
-                        for="msg_createdby"
-                        value="Created By"
-                    />
-
-                    <x-form.input-text
-                        name="msg_createdby"
-                        id="msg_createdby"
-                        :value="$systemMessage->msg_createdby ?? ''"
-                        disabled
-                    />
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <x-form.input-label
-                        for="msg_modifiedby"
-                        value="Modified By"
-                    />
-
-                    <x-form.input-text
-                        name="msg_modifiedby"
-                        id="msg_modifiedby"
-                        :value="$systemMessage->msg_modifiedby ?? ''"
-                        disabled
-                    />
+            <div class="mt-3">
+                <div
+                    id="email_schedule_preview"
+                    class="alert alert-outline-dark border small mb-0"
+                >
+                    <div class="fw-semibold mb-2 text-primary">Email Schedule Preview</div>
+                    <div
+                        id="email_schedule_preview_content"
+                        class="small text-muted"
+                    >
+                        No email schedule calculated yet.
+                    </div>
                 </div>
             </div>
         </x-card.card>
     </div>
 </div>
 
-<div class="d-flex justify-content-end gap-2 mt-3">
-    <x-ui.link
-        :href="route('setting.system_message.index', $company->cmp_id)"
-        variant="secondary"
-    >
-        Cancel
-    </x-ui.link>
+@if ($isEdit)
+    {{-- System section include memo + system info + audit  --}}
+    <h5 class="mt-4 mb-0">System Info</h5>
+    <div class="row">
+        <div class="col-12">
+            <div
+                class="accordion accordion-custom-button mt-3"
+                id="accordionSystem"
+            >
+                {{-- Eamil Logs --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingEmailLog"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionEmailLog"
+                            aria-expanded="false"
+                            aria-controls="accordionEmailLog"
+                        >
+                            Email Log
+                        </button>
+                    </h2>
 
-    <button
-        type="submit"
-        class="btn btn-primary"
-    >
-        {{ $isEdit ? 'Update' : 'Save' }}
-    </button>
-</div>
+                    <div
+                        id="accordionEmailLog"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingEmailLog"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            <div class="table-responsive">
+                                <table
+                                    id="system-message-email-log-table"
+                                    class="table table-bordered table-striped w-100"
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">No</th>
+                                            <th>Recipient Email</th>
+                                            <th style="width: 120px;">Offset Day</th>
+                                            <th style="width: 180px;">Scheduled For</th>
+                                            <th style="width: 120px;">Trigger Type</th>
+                                            <th style="width: 120px;">Status</th>
+                                            <th style="width: 180px;">Sent At</th>
+                                            <th>Error Message</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- Memo / Notes --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingMemo"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionSystemOne"
+                            aria-expanded="false"
+                            aria-controls="accordionSystemOne"
+                        >
+                            Memo / Notes
+                        </button>
+                    </h2>
+
+                    <div
+                        id="accordionSystemOne"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingMemo"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            @include('admin.memo._memo-panel_accordion', [
+                                'title' => 'Memo / Notes',
+                                'memoableType' => 'system_message',
+                                'memoableId' => $systemMessage->msg_id,
+                                'memos' => $systemMessage->memos,
+                            ])
+                        </div>
+                    </div>
+                </div>
+
+                {{-- System Logs --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingSystemLog"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionSystemTwo"
+                            aria-expanded="false"
+                            aria-controls="accordionSystemTwo"
+                        >
+                            System Logs
+                        </button>
+                    </h2>
+
+                    <div
+                        id="accordionSystemTwo"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingSystemLog"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            @include('admin.system.show_accordion', [
+                                'record' => $systemMessage,
+                                'prefix' => 'msg',
+                                'fields' => [
+                                    ['suffix' => 'id', 'col' => 'col-md-3'],
+                                    ['suffix' => 'version', 'col' => 'col-md-3'],
+                                    ['suffix' => 'hit', 'col' => 'col-md-3'],
+                                    ['suffix' => 'viewedby', 'col' => 'col-md-3'],
+                                    ['suffix' => 'createdon', 'col' => 'col-md-6', 'type' => 'datetime'],
+                                    ['suffix' => 'createdby', 'col' => 'col-md-6'],
+                                    ['suffix' => 'modifiedon', 'col' => 'col-md-6', 'type' => 'datetime'],
+                                    ['suffix' => 'modifiedby', 'col' => 'col-md-6'],
+                                ],
+                            ])
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Audit Logs --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingCustomThree"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionAuditLog"
+                            aria-expanded="false"
+                            aria-controls="accordionAuditLog"
+                        >
+                            Audit Logs
+                        </button>
+                    </h2>
+
+                    <div
+                        id="accordionAuditLog"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingCustomThree"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            @include('admin.audit.show_accordion', [
+                                'auditId' => $systemMessage->msg_id,
+                                'auditType' => 'system_message',
+                                'auditTitle' => 'Audit Log',
+                                'collapseId' => 'accordionAuditLog',
+                            ])
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
 @push('scripts')
     <script>
@@ -609,65 +708,98 @@
         }
 
         function updateDateReferencePreview() {
-            const config = getSelectedReferenceConfig();
+            const timing = getTimingCalculation();
 
-            const startDay = parseInt($('#msg_start_day').val(), 10) || 0;
-            const beforeAfter = ($('#msg_before_after').val() || 'before').toLowerCase();
-            const term = parseInt($('#msg_term').val(), 10) || 0;
-
-            const referenceRawValue = config.selector ? $(config.selector).val() : '';
-            const referenceDate = parseDateTimeLocal(referenceRawValue);
-
-            let showFrom = null;
-            let showUntil = null;
-            let formulaText = '-';
-            let warningText = '';
-
-            $('#preview_reference_label').text(config.label || '-');
-            $('#preview_reference_value').text(referenceDate ? formatDateTime(referenceDate) : '-');
-
-            if (!config.selector) {
-                warningText = 'Unable to determine selected reference date.';
-            } else if (!referenceDate) {
-                warningText = `${config.label} is empty. Please fill in the selected reference datetime first.`;
-            } else {
-                if (beforeAfter === 'after') {
-                    showFrom = addDays(referenceDate, startDay);
-                } else {
-                    showFrom = addDays(referenceDate, -startDay);
-                }
-
-                if (term > 0) {
-                    showUntil = addDays(showFrom, term);
-                }
-
-                formulaText =
-                    `Reference "${config.label}" ` +
-                    `${beforeAfter === 'after' ? '+' : '-'} ${startDay} day(s)` +
-                    `${term > 0 ? `, then + ${term} day(s) term` : ', term = 0 (until deleted)'}`;
-            }
-
-            $('#preview_show_from').text(showFrom ? formatDateTime(showFrom) : '-');
-            $('#preview_show_until').text(
-                showUntil ?
-                formatDateTime(showUntil) :
-                (referenceDate && term === 0 ? 'Until deleted' : '-')
+            $('#preview_reference_label').text(timing.config.label || '-');
+            $('#preview_reference_value').text(
+                timing.referenceDate ? formatDateTime(timing.referenceDate) : '-'
             );
-            $('#preview_formula').text(formulaText);
+            $('#preview_show_from').text(
+                timing.showFrom ? formatDateTime(timing.showFrom) : '-'
+            );
+            $('#preview_show_until').text(
+                timing.showUntil ?
+                formatDateTime(timing.showUntil) :
+                (timing.showFrom ? 'Until deleted' : '-')
+            );
+            $('#preview_formula').text(timing.formulaText);
 
-            if (warningText) {
-                $('#preview_warning').text(warningText).show();
+            if (timing.warningText) {
+                $('#preview_warning').text(timing.warningText).show();
             } else {
                 $('#preview_warning').hide().text('');
             }
         }
 
+        function updateEmailSchedulePreview() {
+            const enableEmail = $('#msg_enable_email').is(':checked');
+            const timing = getTimingCalculation();
+            const offsets = parseEmailOffsets($('#msg_email_date').val());
+
+            if (!enableEmail) {
+                $('#email_schedule_preview_content').html(
+                    '<span class="text-muted">Email notification is disabled.</span>'
+                );
+                return;
+            }
+
+            if (!timing.showFrom) {
+                $('#email_schedule_preview_content').html(
+                    '<span class="text-danger">Show From date is not ready yet. Complete timing fields first.</span>'
+                );
+                return;
+            }
+
+            if (offsets.length === 0) {
+                $('#email_schedule_preview_content').html(
+                    '<span class="text-muted">No valid email offsets found. Example: -10,-5,0,1,5,10</span>'
+                );
+                return;
+            }
+
+            let rows = `
+        <div class="mb-2">
+            <strong>Base Date:</strong> Show From = ${formatDateTime(timing.showFrom)}
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th style="width:120px;">Offset Day</th>
+                        <th>Send On</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+            offsets.forEach(offset => {
+                const sendDate = addDays(timing.showFrom, offset);
+
+                rows += `
+            <tr>
+                <td>${offset > 0 ? '+' + offset : offset}</td>
+                <td>${formatDateTime(sendDate)}</td>
+            </tr>
+        `;
+            });
+
+            rows += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+            $('#email_schedule_preview_content').html(rows);
+        }
+
         $(function() {
             toggleEmailInput();
             updateDateReferencePreview();
+            updateEmailSchedulePreview();
 
             $('#msg_enable_email').on('change', function() {
                 toggleEmailInput();
+                updateEmailSchedulePreview();
             });
 
             $(
@@ -679,9 +811,11 @@
                 '#msg_start_date, ' +
                 '#msg_end_date, ' +
                 '#cmp_sub_start_date, ' +
-                '#cmp_sub_end_date'
+                '#cmp_sub_end_date, ' +
+                '#msg_email_date'
             ).on('change input keyup', function() {
                 updateDateReferencePreview();
+                updateEmailSchedulePreview();
             });
 
             if (document.getElementById('msg_description_editor')) {
@@ -734,5 +868,144 @@
                 });
             }
         });
+
+        function getTimingCalculation() {
+            const config = getSelectedReferenceConfig();
+
+            const startDay = parseInt($('#msg_start_day').val(), 10) || 0;
+            const beforeAfter = ($('#msg_before_after').val() || 'before').toLowerCase();
+            const term = parseInt($('#msg_term').val(), 10) || 0;
+
+            const referenceRawValue = config.selector ? $(config.selector).val() : '';
+            const referenceDate = parseDateTimeLocal(referenceRawValue);
+
+            let showFrom = null;
+            let showUntil = null;
+            let formulaText = '-';
+            let warningText = '';
+
+            if (!config.selector) {
+                warningText = 'Unable to determine selected reference date.';
+            } else if (!referenceDate) {
+                warningText = `${config.label} is empty. Please fill in the selected reference datetime first.`;
+            } else {
+                showFrom = beforeAfter === 'after' ?
+                    addDays(referenceDate, startDay) :
+                    addDays(referenceDate, -startDay);
+
+                if (term > 0) {
+                    showUntil = addDays(showFrom, term);
+                }
+
+                formulaText =
+                    `Reference "${config.label}" ` +
+                    `${beforeAfter === 'after' ? '+' : '-'} ${startDay} day(s)` +
+                    `${term > 0 ? `, then + ${term} day(s) term` : ', term = 0 (until deleted)'}`;
+            }
+
+            return {
+                config,
+                referenceDate,
+                showFrom,
+                showUntil,
+                formulaText,
+                warningText
+            };
+        }
+
+        function parseEmailOffsets(rawValue) {
+            if (!rawValue) {
+                return [];
+            }
+
+            const values = rawValue.split(',')
+                .map(value => value.trim())
+                .filter(value => /^-?\d+$/.test(value))
+                .map(value => parseInt(value, 10));
+
+            return [...new Set(values)].sort((a, b) => a - b);
+        }
+
+        $('#resend_email_button').on('click', function() {
+            const url = $(this).data('url');
+
+            if (!url) {
+                alert('Please save the system message first before manual resend.');
+                return;
+            }
+
+            const button = $(this);
+            button.prop('disabled', true).text('Sending...');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    alert(response.message || 'Email queued successfully.');
+                    location.reload();
+                },
+                error: function(xhr) {
+                    const message = xhr.responseJSON?.message || 'Failed to queue email.';
+                    alert(message);
+                },
+                complete: function() {
+                    button.prop('disabled', false).text('Send Email');
+                }
+            });
+        });
+
+        @if ($isEdit)
+            $('#system-message-email-log-table').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('setting.system_message.email_log_list', [
+                    'company_profile' => $company->cmp_id,
+                    'system_message' => $systemMessage->msg_id,
+                ]) }}',
+                order: [
+                    [0, 'desc']
+                ],
+                pageLength: 10,
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'recipient_email',
+                        name: 'recipient_email'
+                    },
+                    {
+                        data: 'scheduled_offset_day',
+                        name: 'scheduled_offset_day'
+                    },
+                    {
+                        data: 'scheduled_for',
+                        name: 'scheduled_for'
+                    },
+                    {
+                        data: 'trigger_type',
+                        name: 'trigger_type'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
+                        data: 'sent_at',
+                        name: 'sent_at'
+                    },
+                    {
+                        data: 'error_message',
+                        name: 'error_message',
+                        orderable: false
+                    }
+                ]
+            });
+        @endif
     </script>
 @endpush

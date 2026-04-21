@@ -124,6 +124,7 @@
             color: #6c757d !important;
         }
     </style>
+    @include('styles.dynamic-theme')
     @stack('styles')
 </head>
 
@@ -342,11 +343,6 @@
                                     <script>
                                         document.write(new Date().getFullYear());
                                     </script>
-                                    , made with ❤️ by <a
-                                        href="https://pixinvent.com"
-                                        target="_blank"
-                                        class="footer-link"
-                                    >Pixinvent</a>
                                 </div>
                                 <div class="d-none d-lg-inline-block">
                                     <a

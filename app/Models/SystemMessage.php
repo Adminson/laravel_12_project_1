@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Memo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use OwenIt\Auditing\Auditable;
 use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
@@ -63,6 +67,12 @@ class SystemMessage extends Model implements AuditableContract
     {
         return $this->belongsTo(CompanyProfile::class, 'msg_company_profile_id', 'cmp_id');
     }
+
+    public function memos(): MorphMany
+    {
+        return $this->morphMany(Memo::class, 'memoable')->latest();
+    }
+
 
     /**
      * Resolve actual reference date based on:
@@ -182,5 +192,76 @@ class SystemMessage extends Model implements AuditableContract
             'message_date:date2' => 'Message Date 2',
             default => 'Unknown Reference Date',
         };
+    }
+
+    // =============================================================================================================================================================================
+    // ======================================================================== For Email functions ================================================================================
+    // =============================================================================================================================================================================
+    public function emailLogs(): HasMany
+    {
+        return $this->hasMany(SystemMessageEmailLog::class, 'system_message_id', 'msg_id');
+    }
+
+    public function getEmailRecipients(): array
+    {
+        return collect($this->msg_email ?? [])
+            ->map(fn($email) => trim((string) $email))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    public function getEmailOffsetDays(): array
+    {
+        $raw = (string) ($this->msg_email_date ?? '');
+
+        if ($raw === '') {
+            return [];
+        }
+
+        return collect(explode(',', $raw))
+            ->map(fn($value) => trim($value))
+            ->filter(fn($value) => $value !== '' && preg_match('/^-?\d+$/', $value))
+            ->map(fn($value) => (int) $value)
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Email schedule is based on Show From.
+     *
+     * Example:
+     * show_from = 29/04/2026 12:00 AM
+     * offsets   = [-10, -5, 0, 1, 5, 10]
+     */
+    public function getEmailScheduleDates(): array
+    {
+        $showFrom = $this->getAlertShowFrom();
+
+        if (! $showFrom) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($this->getEmailOffsetDays() as $offsetDay) {
+            $result[] = [
+                'offset_day' => $offsetDay,
+                'send_at' => $showFrom->copy()->addDays($offsetDay),
+            ];
+        }
+
+        return $result;
+    }
+
+    public function canAutoSendEmail(): bool
+    {
+        return (bool) $this->msg_enable_email
+            && ! empty($this->getEmailRecipients())
+            && ! empty($this->getEmailOffsetDays())
+            && $this->getAlertShowFrom() !== null;
     }
 }

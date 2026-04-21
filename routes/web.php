@@ -1,13 +1,14 @@
 <?php
 
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\CompanyAdminController;
+use App\Http\Controllers\Admin\LicenseAdminController;
 use App\Http\Controllers\Admin\MemoController;
 use App\Http\Controllers\Admin\SelectInputListAdminController;
 use App\Http\Controllers\Admin\SystemMessageAdminController;
 use App\Http\Controllers\Admin\UiConfigurationController;
 use App\Http\Controllers\Admin\UserAdminController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -59,6 +60,8 @@ Route::prefix('setting')
                 Route::get('/{company_profile}/edit', [CompanyAdminController::class, 'edit'])->name('edit');
                 Route::post('/{company_profile}/update', [CompanyAdminController::class, 'update'])->name('update');
                 Route::delete('/{company_profile}', [CompanyAdminController::class, 'destroy'])->name('delete');
+                // Route::post('/test-pdf', [CompanyAdminController::class, 'testPdf'])->name('test_pdf');
+                Route::get('/{company_profile}/test-pdf', [CompanyAdminController::class, 'testPdf'])->name('test_pdf');
             });
 
         /*
@@ -75,12 +78,20 @@ Route::prefix('setting')
                 Route::get('/{company_profile}/create', [SystemMessageAdminController::class, 'create'])->name('create');
                 Route::post('/{company_profile}/store', [SystemMessageAdminController::class, 'store'])->name('store');
 
-                Route::get('/{company_profile}/{system_message}/edit', [SystemMessageAdminController::class, 'edit'])->name('edit');
+                Route::get('/{company_profile}/{system_message}/edit', [SystemMessageAdminController::class, 'edit'])->name('edit'); //setting/system-message/{company_profile}/{system_message}/edit
                 Route::put('/{company_profile}/{system_message}/update', [SystemMessageAdminController::class, 'update'])->name('update');
 
                 Route::delete('/{company_profile}/{system_message}', [SystemMessageAdminController::class, 'destroy'])->name('delete');
-            });
+                Route::post('/{company_profile}/system-message/{system_message}/resend-email', [SystemMessageAdminController::class, 'resendEmail'])->name('resend_email');
 
+
+                Route::get('/{company_profile}/system-message/{system_message}/email-log-list', [SystemMessageAdminController::class, 'emailLogList'])->name('email_log_list'); //setting.system_message.email_log_list
+            });
+        Route::prefix('license')
+            ->name('license.')
+            ->group(function () {
+                Route::get('/{company_profile}', [LicenseAdminController::class, 'index'])->name('index');
+            });
         /*
         |--------------------------------------------------------------------------
         | UI Configuration
@@ -131,7 +142,7 @@ Route::prefix('setting')
         Route::prefix('audit')
             ->name('audit.')
             ->group(function () {
-                Route::get('/audit-list/{id}/{type}', [AuditLogController::class, 'list'])->name('audit-list');
+                Route::get('/audit-list/{id}/{type}', [AuditLogController::class, 'list'])->name('audit-list'); //setting.audit.audit-list
 
                 Route::get('/audit-full-list', [AuditLogController::class, 'fullList'])->name('audit-full-list');
                 Route::get('/audit-full-list-data', [AuditLogController::class, 'fullListData'])->name('audit-full-list-data');

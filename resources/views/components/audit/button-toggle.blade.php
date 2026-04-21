@@ -1,4 +1,4 @@
-@props([
+{{-- @props([
     'target' => 'auditLogSection',
     'label' => 'Audit Log',
 ])
@@ -12,4 +12,4 @@
 >
     <i class="ti ti-eye me-1"></i>
     <span>{{ $label }}</span>
-</button>
+</button> --}}

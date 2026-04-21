@@ -23,11 +23,22 @@ class AuditLogController extends Controller
 
         $audits = $model->audits()
             ->with('user')
-            ->latest()
-            ->get();
+            ->latest('created_at')
+            ->get()
+            ->values();
+
+        $formattedRows = collect($formatter->formatCollection($audits))
+            ->values()
+            ->map(function (array $row, int $index) use ($audits) {
+                $audit = $audits[$index];
+
+                $row['created_date_sort'] = optional($audit->created_at)->timestamp ?? 0;
+
+                return $row;
+            });
 
         return response()->json([
-            'data' => $formatter->formatCollection($audits),
+            'data' => $formattedRows,
         ]);
     }
 

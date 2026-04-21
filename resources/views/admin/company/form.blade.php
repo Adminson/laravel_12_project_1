@@ -20,6 +20,14 @@
                     System Message
                 </a>
             </li>
+            <li class="nav-item">
+                <a
+                    class="nav-link"
+                    href="{{ route('setting.license.index', $company->cmp_id) }}"
+                >
+                    License
+                </a>
+            </li>
         @endif
     </ul>
 
@@ -33,8 +41,67 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="mb-0">{{ $isEdit ? 'Edit Company' : 'Create Company' }}</h4>
-        </div>
+            <div class="text-end mt-2">
 
+                <x-ui.link
+                    :href="route('setting.company.index')"
+                    variant="secondary"
+                    class="me-1"
+                >
+                    Back
+                </x-ui.link>
+
+
+                <x-ui.button
+                    type="submit"
+                    variant="primary"
+                >
+                    {{ $isEdit ? 'Save Changes' : 'Create Company' }}
+                </x-ui.button>
+            </div>
+        </div>
+        <div class="dynamic-theme-form">
+            <div class="field-spacing">
+                <x-form.input-label
+                    for="company_name"
+                    value="Company Name"
+                />
+
+                <x-form.input-text
+                    name="company_name"
+                    id="company_name"
+                    :value="$company->company_name ?? ''"
+                />
+            </div>
+
+            <div class="field-spacing">
+                <x-form.input-label
+                    for="company_email"
+                    value="Email"
+                />
+
+                <x-form.input-text
+                    name="company_email"
+                    id="company_email"
+                    type="email"
+                    :value="$company->company_email ?? ''"
+                />
+            </div>
+
+            <div class="field-spacing">
+                <x-form.input-label
+                    for="remarks"
+                    value="Remarks"
+                />
+
+                <x-form.textarea
+                    name="remarks"
+                    id="remarks"
+                    :value="$company->remarks ?? ''"
+                    rows="4"
+                />
+            </div>
+        </div>
         <div class="row g-2">
             {{-- Row 1 : Company Details | Contact Info --}}
             <div class="col-12 col-xl-6">
@@ -170,6 +237,17 @@
             {{-- Row 2 : Header & Footer | Parameters for PDF --}}
             <div class="col-12 col-xl-6">
                 <x-card.section-card title="Header & Footer">
+                    @if ($isEdit)
+                        <x-slot name="headerActions">
+                            <a
+                                href="{{ route('setting.company.test_pdf', ['company_profile' => $company->cmp_id]) }}"
+                                target="_blank"
+                                class="btn btn-primary"
+                            >
+                                Test PDF Generation
+                            </a>
+                        </x-slot>
+                    @endif
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <x-form.input-label
@@ -222,14 +300,14 @@
                         <div class="col-md-3 mb-3">
                             <x-form.input-label
                                 for="cmp_logo_size"
-                                value="Logo Size"
+                                value="Logo Size (%)"
                             />
                             <x-form.input-text
                                 name="cmp_logo_size"
                                 type="number"
-                                :value="$company->cmp_logo_size ?? 12"
+                                :value="$company->cmp_logo_size ?? 50"
                                 min="1"
-                                max="999"
+                                max="100"
                                 step="1"
                             />
                         </div>
@@ -338,129 +416,147 @@
                 </x-card.section-card>
             </div>
 
-            {{-- Row 4 : Memo --}}
-            @if ($isEdit)
-                <div class="col-12">
-                    @include('admin.memo._memo-panel', [
-                        'title' => 'Memo / Notes',
-                        'memoableType' => 'company',
-                        'memoableId' => $company->cmp_id,
-                        'memos' => $company->memos,
-                    ])
-                </div>
-            @endif
-            {{-- Row 5 : System Info --}}
-            @if ($isEdit)
-                <div class="col-12">
-                    <x-card.section-card title="System Info">
-                        <div class="row">
-                            <div class="col-md-3 mb-3">
-                                <x-form.input-label value="cmp_id" />
-                                <x-form.input-text
-                                    name="view_cmp_id"
-                                    :value="$company->cmp_id"
-                                    readonly
-                                />
-                            </div>
 
-                            <div class="col-md-3 mb-3">
-                                <x-form.input-label value="cmp_version" />
-                                <x-form.input-text
-                                    name="view_cmp_version"
-                                    :value="$company->cmp_version"
-                                    readonly
-                                />
-                            </div>
-
-                            <div class="col-md-3 mb-3">
-                                <x-form.input-label value="cmp_hit" />
-                                <x-form.input-text
-                                    name="view_cmp_hit"
-                                    :value="$company->cmp_hit"
-                                    readonly
-                                />
-                            </div>
-
-                            <div class="col-md-3 mb-3">
-                                <x-form.input-label value="cmp_viewedby" />
-                                <x-form.input-text
-                                    name="view_cmp_viewedby"
-                                    :value="$company->cmp_viewedby"
-                                    readonly
-                                />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <x-form.input-label value="cmp_createdon" />
-                                <x-form.input-text
-                                    name="view_cmp_createdon"
-                                    :value="optional($company->cmp_createdon)->format('Y-m-d H:i:s')"
-                                    readonly
-                                />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <x-form.input-label value="cmp_createdby" />
-                                <x-form.input-text
-                                    name="view_cmp_createdby"
-                                    :value="$company->cmp_createdby"
-                                    readonly
-                                />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <x-form.input-label value="cmp_modifiedon" />
-                                <x-form.input-text
-                                    name="view_cmp_modifiedon"
-                                    :value="optional($company->cmp_modifiedon)->format('Y-m-d H:i:s')"
-                                    readonly
-                                />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <x-form.input-label value="cmp_modifiedby" />
-                                <x-form.input-text
-                                    name="view_cmp_modifiedby"
-                                    :value="$company->cmp_modifiedby"
-                                    readonly
-                                />
-                            </div>
-                        </div>
-                    </x-card.section-card>
-                </div>
-            @endif
 
             {{-- Action buttons --}}
             <div class="col-12">
-                <div class="text-end mt-2">
-                    <a
-                        href="{{ route('setting.company.index') }}"
-                        class="btn btn-secondary"
-                    >
-                        Back
-                    </a>
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        {{ $isEdit ? 'Save Changes' : 'Create Company' }}
-                    </button>
-                </div>
+
             </div>
         </div>
     </form>
 
-    @if (!empty($company))
-        @include('admin.audit.show', [
-            'auditId' => $company->cmp_id,
-            'auditType' => 'company',
-            'auditTitle' => 'Audit Log',
-        ])
-    @endif
+    {{-- System section include memo + system info + audit  --}}
+    <h5 class="mt-4 mb-0">System Info</h5>
+    <div class="row">
+        <div class="col-12">
+            <div
+                class="accordion accordion-custom-button mt-3"
+                id="accordionSystem"
+            >
+                {{-- Memo / Notes --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingMemo"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionSystemOne"
+                            aria-expanded="false"
+                            aria-controls="accordionSystemOne"
+                        >
+                            Memo / Notes
+                        </button>
+                    </h2>
+
+                    <div
+                        id="accordionSystemOne"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingMemo"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            @if ($isEdit)
+                                @include('admin.memo._memo-panel_accordion', [
+                                    'title' => 'Memo / Notes',
+                                    'memoableType' => 'company',
+                                    'memoableId' => $company->cmp_id,
+                                    'memos' => $company->memos,
+                                ])
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- System Logs --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingSystemLog"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionSystemTwo"
+                            aria-expanded="false"
+                            aria-controls="accordionSystemTwo"
+                        >
+                            System Logs
+                        </button>
+                    </h2>
+
+                    <div
+                        id="accordionSystemTwo"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingSystemLog"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            @if ($isEdit)
+                                @include('admin.system.show_accordion', [
+                                    'record' => $company,
+                                    'prefix' => 'cmp',
+                                    'fields' => [
+                                        ['suffix' => 'id', 'col' => 'col-md-3'],
+                                        ['suffix' => 'version', 'col' => 'col-md-3'],
+                                        ['suffix' => 'hit', 'col' => 'col-md-3'],
+                                        ['suffix' => 'viewedby', 'col' => 'col-md-3'],
+                                        ['suffix' => 'createdon', 'col' => 'col-md-6', 'type' => 'datetime'],
+                                        ['suffix' => 'createdby', 'col' => 'col-md-6'],
+                                        ['suffix' => 'modifiedon', 'col' => 'col-md-6', 'type' => 'datetime'],
+                                        ['suffix' => 'modifiedby', 'col' => 'col-md-6'],
+                                    ],
+                                ])
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Audit Logs --}}
+                <div class="accordion-item">
+                    <h2
+                        class="accordion-header"
+                        id="headingCustomThree"
+                    >
+                        <button
+                            type="button"
+                            class="accordion-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accordionAuditLog"
+                            aria-expanded="false"
+                            aria-controls="accordionAuditLog"
+                        >
+                            Audit Logs
+                        </button>
+                    </h2>
+
+                    <div
+                        id="accordionAuditLog"
+                        class="accordion-collapse collapse"
+                        aria-labelledby="headingCustomThree"
+                        data-bs-parent="#accordionSystem"
+                    >
+                        <div class="accordion-body">
+                            @if (!empty($company))
+                                @include('admin.audit.show_accordion', [
+                                    'auditId' => $company->cmp_id,
+                                    'auditType' => 'company',
+                                    'auditTitle' => 'Audit Log',
+                                    'collapseId' => 'accordionAuditLog',
+                                ])
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
- <script src="{{ asset('js/custom/audit_log_ajax.js') }}"></script>
     <script>
         function previewLogo(input) {
             const file = input.files[0];
@@ -519,7 +615,7 @@
                     cmp_logo_size: {
                         digits: true,
                         min: 1,
-                        max: 999
+                        max: 100
                     },
                     cmp_sub_end_date: {
                         greaterThanStart: true

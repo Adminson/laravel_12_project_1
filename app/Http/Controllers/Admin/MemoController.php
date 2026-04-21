@@ -76,10 +76,11 @@ class MemoController extends Controller
     private function allowedMemoableTypes(): array
     {
         return [
-            'company'       => \App\Models\CompanyProfile::class,
-            'configuration' => \App\Models\UiConfiguration::class,
-            'payment'       => \App\Models\Payment::class,
-            'user'          => \App\Models\User::class,
+            'company'           => \App\Models\CompanyProfile::class,
+            'system_message'    => \App\Models\SystemMessage::class,
+            'configuration'     => \App\Models\UiConfiguration::class,
+            'payment'           => \App\Models\Payment::class,
+            'user'              => \App\Models\User::class,
         ];
     }
 }

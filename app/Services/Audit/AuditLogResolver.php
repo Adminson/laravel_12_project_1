@@ -15,7 +15,7 @@ class AuditLogResolver
      */
     protected array $modelMap = [
         'company' => CompanyProfile::class,
-        'systemmessage' => SystemMessage::class,
+        'system_message' => SystemMessage::class,
         'uiconfiguration' => UiConfiguration::class,
     ];
 

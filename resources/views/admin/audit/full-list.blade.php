@@ -20,7 +20,6 @@
                         <th style="width: 180px;">Staff Name</th>
                         <th>Old Values</th>
                         <th>New Values</th>
-                        <th style="width: 160px;">IP Address</th>
                     </tr>
                 </thead>
             </table>
@@ -76,10 +75,6 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'ip_address',
-                        name: 'ip_address'
-                    }
                 ]
             });
         });

@@ -20,18 +20,7 @@
         </li>
     </ul>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h4 class="mb-0">Create System Message</h4>
-        </div>
 
-        <x-ui.link
-            :href="route('setting.system_message.index', $company->cmp_id)"
-            variant="secondary"
-        >
-            Back
-        </x-ui.link>
-    </div>
 
     <form
         action="{{ route('setting.system_message.store', $company->cmp_id) }}"

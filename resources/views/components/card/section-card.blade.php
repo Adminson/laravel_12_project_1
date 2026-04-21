@@ -27,8 +27,8 @@
 @endphp
 
 <div {{ $attributes->class(['card', $class]) }}>
-    <div class="card-header pb-0 d-flex justify-content-between align-items-start">
-        <div>
+    <div class="card-header pb-0 d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-grow-1">
             <h5 class="card-title mb-0 d-flex align-items-center gap-2 flex-wrap">
                 <span>{{ $title }}</span>
 
@@ -46,17 +46,25 @@
             @endif
         </div>
 
-        @if ($rightText)
-            <small class="text-muted text-end">{{ $rightText }}</small>
+        @if (isset($headerActions) || $rightText)
+            <div class="text-end flex-shrink-0">
+                @isset($headerActions)
+                    {{ $headerActions }}
+                @elseif ($rightText)
+                    <small class="text-muted">{{ $rightText }}</small>
+            @endif
+        </div>
         @endif
     </div>
 
     <div class="card-body {{ $bodyClass }}">
         {{ $slot }}
     </div>
-</div>
+    </div>
 
-{{-- 
+
+
+    {{-- 
 Example usage
 
 <x-admin.section-card
@@ -68,7 +76,7 @@ Example usage
 >
     ...
 </x-admin.section-card>
-
+============================================================================================================================================================
 <x-admin.section-card
     title="Subscription & Status"
     :badge="['text' => 'Active', 'type' => 'success']"
@@ -77,7 +85,7 @@ Example usage
 >
     ...
 </x-admin.section-card>
-
+============================================================================================================================================================
 <x-admin.section-card
     title="System Info"
     badge="Read Only"
@@ -86,4 +94,36 @@ Example usage
 >
     ...
 </x-admin.section-card>
+============================================================================================================================================================
+<x-card.section-card title="Header & Footer">
+    <x-slot name="headerActions">
+        <button
+            type="button"
+            id="testPdfBtn"
+            class="btn btn-primary"
+        >
+            Test PDF Generation
+        </button>
+    </x-slot>
+</x-admin.section-card>
+
+============================================================================================================================================================
+if multiple buttons
+<x-card.section-card title="Header & Footer">
+    <x-slot name="headerActions">
+        <div class="d-flex gap-2">
+            <a href="{{ route('setting.company.index') }}" class="btn btn-label-secondary">
+                Cancel
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+                {{ $isEdit ? 'Save Changes' : 'Create Company' }}
+            </button>
+        </div>
+    </x-slot>
+
+    <div class="row">
+        ...
+    </div>
+</x-card.section-card>
 --}}

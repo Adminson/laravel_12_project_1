@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendSystemMessageEmailJob;
 use App\Models\CompanyProfile;
 use App\Models\SystemMessage;
+use App\Models\SystemMessageEmailLog;
 use App\Services\Audit\AuditLogFormatter;
 use App\Services\SystemMessageAlertFormatter;
 use Illuminate\Http\JsonResponse;
@@ -197,6 +199,9 @@ class SystemMessageAdminController extends Controller
             $companyProfile
         );
 
+        $systemMessage->load('memos');
+        // dd($systemMessage->load('memos'));
+
         return view('admin.company.system-message.edit', [
             'company' => $companyProfile,
             'systemMessage' => $systemMessage,
@@ -267,6 +272,80 @@ class SystemMessageAdminController extends Controller
         }
     }
 
+    public function emailLogList(
+        Request $request,
+        CompanyProfile $companyProfile,
+        SystemMessage $systemMessage
+    ): JsonResponse {
+        abort_unless(
+            (int) $systemMessage->msg_company_profile_id === (int) $companyProfile->cmp_id,
+            404
+        );
+
+        $query = SystemMessageEmailLog::query()
+            ->where('system_message_id', $systemMessage->msg_id)
+            ->select([
+                'id',
+                'recipient_email',
+                'scheduled_offset_day',
+                'scheduled_for',
+                'trigger_type',
+                'status',
+                'sent_at',
+                'error_message',
+                'created_at',
+            ])
+            ->latest('id');
+
+        return DataTables::eloquent($query)
+            ->addIndexColumn()
+            ->editColumn('scheduled_offset_day', function (SystemMessageEmailLog $row) {
+                if (is_null($row->scheduled_offset_day)) {
+                    return '-';
+                }
+
+                return $row->scheduled_offset_day > 0
+                    ? '+' . $row->scheduled_offset_day
+                    : (string) $row->scheduled_offset_day;
+            })
+            ->editColumn('scheduled_for', function (SystemMessageEmailLog $row) {
+                return $row->scheduled_for
+                    ? \Carbon\Carbon::parse($row->scheduled_for)->format('d-M-Y h:i:s A')
+                    : '-';
+            })
+            ->editColumn('sent_at', function (SystemMessageEmailLog $row) {
+                return $row->sent_at
+                    ? \Carbon\Carbon::parse($row->sent_at)->format('d-M-Y h:i:s A')
+                    : '-';
+            })
+            ->editColumn('trigger_type', function (SystemMessageEmailLog $row) {
+                return $row->trigger_type
+                    ? ucfirst($row->trigger_type)
+                    : '-';
+            })
+            ->editColumn('status', function (SystemMessageEmailLog $row) {
+                $status = strtolower((string) $row->status);
+
+                $badgeClass = match ($status) {
+                    'sent' => 'success',
+                    'queued' => 'warning',
+                    'failed' => 'danger',
+                    default => 'secondary',
+                };
+
+                return '<span class="badge bg-' . $badgeClass . '">' . e(ucfirst($status ?: 'unknown')) . '</span>';
+            })
+            ->editColumn('error_message', function (SystemMessageEmailLog $row) {
+                if (blank($row->error_message)) {
+                    return '-';
+                }
+
+                return '<span class="text-danger">' . e($row->error_message) . '</span>';
+            })
+            ->rawColumns(['status', 'error_message'])
+            ->toJson();
+    }
+    
     protected function validateMessage(Request $request): array
     {
         return $request->validate([
@@ -285,9 +364,18 @@ class SystemMessageAdminController extends Controller
             'msg_end_date' => ['nullable', 'date', 'after_or_equal:msg_start_date'],
 
             'msg_enable_email' => ['nullable', 'boolean'],
-            'msg_last_date_sent_email' => ['nullable', 'date'],
-            'msg_email_date' => ['nullable', 'string', 'max:500'],
-            'msg_email' => ['nullable', 'string'],
+            'msg_email_date' => [
+                'nullable',
+                'string',
+                'max:500',
+                'regex:/^\s*-?\d+\s*(,\s*-?\d+\s*)*$/',
+            ],
+            'msg_email' => [
+                Rule::requiredIf(fn() => $request->boolean('msg_enable_email')),
+                'nullable',
+                'string',
+                'max:2000',
+            ],
         ]);
     }
 
@@ -313,8 +401,16 @@ class SystemMessageAdminController extends Controller
         $message->msg_end_date = $validated['msg_end_date'] ?? null;
 
         $message->msg_enable_email = $request->boolean('msg_enable_email');
-        $message->msg_last_date_sent_email = $validated['msg_last_date_sent_email'] ?? null;
-        $message->msg_email_date = $validated['msg_email_date'] ?? null;
+
+        $message->msg_email_date = ! empty($validated['msg_email_date'])
+            ? collect(explode(',', $validated['msg_email_date']))
+            ->map(fn($value) => trim($value))
+            ->filter(fn($value) => $value !== '' && preg_match('/^-?\d+$/', $value))
+            ->map(fn($value) => (int) $value)
+            ->unique()
+            ->sort()
+            ->implode(',')
+            : null;
 
         if ($message->msg_enable_email && !empty($validated['msg_email'])) {
             $emails = collect(explode(';', $validated['msg_email']))
@@ -348,5 +444,48 @@ class SystemMessageAdminController extends Controller
         $message->msg_modifiedby = $authName;
 
         $message->save();
+    }
+
+    public function resendEmail(
+        CompanyProfile $companyProfile,
+        SystemMessage $systemMessage
+    ): JsonResponse {
+        abort_unless(
+            (int) $systemMessage->msg_company_profile_id === (int) $companyProfile->cmp_id,
+            404
+        );
+
+        $systemMessage->loadMissing('companyProfile');
+
+        if (! $systemMessage->msg_enable_email) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email notification is disabled for this message.',
+            ], 422);
+        }
+
+        $recipients = $systemMessage->getEmailRecipients();
+
+        if (empty($recipients)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No recipient email found.',
+            ], 422);
+        }
+
+        foreach ($recipients as $recipientEmail) {
+            SendSystemMessageEmailJob::dispatch(
+                systemMessageId: $systemMessage->msg_id,
+                recipientEmail: $recipientEmail,
+                scheduledOffsetDay: null,
+                scheduledFor: null,
+                triggerType: 'manual'
+            );
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Manual email has been queued successfully.',
+        ]);
     }
 }

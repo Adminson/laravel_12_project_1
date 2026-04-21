@@ -1,5 +1,4 @@
 <?php
-// app/Models/UiConfiguration.php
 
 namespace App\Models;
 
@@ -10,6 +9,7 @@ use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 class UiConfiguration extends Model implements AuditableContract
 {
     use Auditable;
+
     protected $table = 'ui_configurations';
 
     protected $fillable = [
@@ -45,6 +45,16 @@ class UiConfiguration extends Model implements AuditableContract
         'modal_overlay_close_enabled' => 'boolean',
     ];
 
+    public const COLOR_MAP = [
+        'black_100' => '#000000',
+        'gray_75'   => '#666666',
+        'gray_50'   => '#808080',
+        'white_100' => '#ffffff',
+        'red_100'   => '#dc3545',
+        'blue_100'  => '#0d6efd',
+        'green_100' => '#198754',
+    ];
+
     public static function defaults(): array
     {
         return [
@@ -73,7 +83,6 @@ class UiConfiguration extends Model implements AuditableContract
         ];
     }
 
-
     public function getResolvedDateFormatAttribute(): string
     {
         $dateFormat = $this->date_format ?: 'Y-m-d';
@@ -87,5 +96,44 @@ class UiConfiguration extends Model implements AuditableContract
         $timeFormat = $this->time_format ?: 'H:i';
 
         return trim($this->resolved_date_format . ' ' . $timeFormat);
+    }
+
+    public function resolveColor(?string $value, string $default = '#000000'): string
+    {
+        if (blank($value)) {
+            return $default;
+        }
+
+        return self::COLOR_MAP[$value] ?? $value;
+    }
+
+    public function getLabelColorCssAttribute(): string
+    {
+        return $this->resolveColor($this->label_color, '#000000');
+    }
+
+    public function getInputColorCssAttribute(): string
+    {
+        return $this->resolveColor($this->input_color, '#666666');
+    }
+
+    public function getLabelFontFamilyCssAttribute(): string
+    {
+        return $this->label_font_family ?: 'Arial, sans-serif';
+    }
+
+    public function getInputFontFamilyCssAttribute(): string
+    {
+        return $this->input_font_family ?: 'Arial, sans-serif';
+    }
+
+    public function getLabelFontWeightCssAttribute(): string
+    {
+        return match (strtolower((string) $this->label_font_weight)) {
+            'bold' => '700',
+            'normal' => '400',
+            'light' => '300',
+            default => is_numeric($this->label_font_weight) ? (string) $this->label_font_weight : '400',
+        };
     }
 }
