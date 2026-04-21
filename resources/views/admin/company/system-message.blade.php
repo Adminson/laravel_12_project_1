@@ -3,12 +3,12 @@
 @section('content')
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('company_setting_edit', $company->id) }}">
+            <a class="nav-link" href="{{ route('setting.company.edit', $company->cmp_id) }}">
                 Company Details
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="{{ route('system_message_index', $company->id) }}">
+            <a class="nav-link active" href="{{ route('setting.system_message.index', $company->cmp_id) }}">
                 System Message
             </a>
         </li>
@@ -97,7 +97,7 @@
                             </div>
 
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Message Type</label>
+                                <label class="form-label">Message/Alert Type</label>
                                 <select name="type" id="type" class="form-select">
                                     <option value="blue">Blue</option>
                                     <option value="orange">Orange</option>
@@ -166,7 +166,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('system_message_list', $company->id) }}',
+                    url: '{{ route('setting.system_message.list', $company->cmp_id) }}',
                     type: 'GET'
                 },
                 columns: [{
@@ -228,7 +228,7 @@
                 const id = $(this).data('id');
 
                 appAjax({
-                    url: `/admin/system-message/item/${id}`,
+                    url: `/setting/system-message/item/${id}`,
                     method: 'GET',
                     onSuccess: function(res) {
                         resetMessageForm();
@@ -262,7 +262,7 @@
                     if (!result.isConfirmed) return;
 
                     appAjax({
-                        url: `/admin/system-message/item/${id}`,
+                        url: `/setting/system-message/item/${id}`,
                         method: 'DELETE',
                         onSuccess: function(res) {
                             Swal.fire({
@@ -345,8 +345,8 @@
                 submitHandler: function(form) {
                     const id = $('#message_id').val();
                     const url = id ?
-                        `/admin/system-message/item/${id}/update` :
-                        `{{ route('system_message_store', $company->id) }}`;
+                        `/setting/system-message/item/${id}/update` :
+                        `{{ route('setting.system_message.store', $company->cmp_id) }}`;
 
                     appAjax({
                         url: url,

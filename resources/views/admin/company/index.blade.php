@@ -4,18 +4,25 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Company List</h4>
-            <a href="{{ route('company_setting_create') }}" class="btn btn-primary">
+            <a
+                href="{{ route('setting.company.create') }}"
+                class="btn btn-primary"
+            >
                 Create
             </a>
         </div>
         <div class="card-body">
-            <table class="table table-bordered" id="companyTable" width="100%">
+            <table
+                class="table table-bordered"
+                id="companyTable"
+                width="100%"
+            >
                 <thead>
                     <tr>
                         <th width="60">#</th>
                         <th>Company Name</th>
                         <th>Reg No</th>
-                        <th>Contact</th>
+                        <th>Contact Person</th>
                         <th>Subscription Start</th>
                         <th>Subscription End</th>
                         <th width="120">Suspend</th>
@@ -36,7 +43,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ route('company_setting_list') }}',
+                    url: '{{ route('setting.company.list') }}',
                     type: 'GET'
                 },
                 columns: [{
@@ -46,28 +53,28 @@
                         searchable: false
                     },
                     {
-                        data: 'company_name',
-                        name: 'company_name'
+                        data: 'cmp_company_name',
+                        name: 'cmp_company_name'
                     },
                     {
-                        data: 'reg_no',
-                        name: 'reg_no'
+                        data: 'cmp_reg_no',
+                        name: 'cmp_reg_no'
                     },
                     {
-                        data: 'contact',
-                        name: 'contact'
+                        data: 'cmp_contact_person',
+                        name: 'cmp_contact_person'
                     },
                     {
-                        data: 'sub_start_date',
-                        name: 'sub_start_date'
+                        data: 'cmp_sub_start_date',
+                        name: 'cmp_sub_start_date'
                     },
                     {
-                        data: 'sub_end_date',
-                        name: 'sub_end_date'
+                        data: 'cmp_sub_end_date',
+                        name: 'cmp_sub_end_date'
                     },
                     {
-                        data: 'suspend_login',
-                        name: 'suspend_login'
+                        data: 'cmp_suspend_login',
+                        name: 'cmp_suspend_login'
                     },
                     {
                         data: 'action',
@@ -92,7 +99,7 @@
                 if (!result.isConfirmed) return;
 
                 appAjax({
-                    url: `/admin/company-setting/${id}`,
+                    url: `/setting/company/${id}`,
                     method: 'DELETE',
                     onSuccess: function(res) {
                         Swal.fire({

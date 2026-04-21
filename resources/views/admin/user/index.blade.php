@@ -202,7 +202,7 @@
                 $('#userTable').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('user_setting_list') }}',
+                    ajax: '{{ route('setting.user.list') }}',
                     columns: [{
                             data: 'DT_RowIndex',
                             name: 'DT_RowIndex',

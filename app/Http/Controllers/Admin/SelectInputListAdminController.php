@@ -9,12 +9,12 @@ use Illuminate\Validation\Rule;
 
 class SelectInputListAdminController extends Controller
 {
-    public function index()
+    public function index() //setting/select-input-list // setting.select_input_list.index
     {
         return view('admin.index');
     }
 
-    // GET: /admin/select-input-lists/{data_type}/options
+    // GET: /setting/select-input-lists/{data_type}/options
     public function options(string $data_type)
     {
         $items = SelectInputList::query()
@@ -27,7 +27,7 @@ class SelectInputListAdminController extends Controller
         ]);
     }
 
-    // POST: /admin/select-input-lists
+    // POST: /setting/select-input-lists
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -46,7 +46,7 @@ class SelectInputListAdminController extends Controller
         return $this->options($validated['data_type']);
     }
 
-    // PUT: /admin/select-input-lists/{selectInputList}
+    // PUT: /setting/select-input-lists/{selectInputList}
     public function update(Request $request, SelectInputList $selectInputList)
     {
         $validated = $request->validate([
@@ -65,8 +65,8 @@ class SelectInputListAdminController extends Controller
         return $this->options($selectInputList->data_type);
     }
 
-    // DELETE: /admin/select-input-lists/{selectInputList}
-    public function destroy(SelectInputList $selectInputList)
+    // DELETE: /setting/select-input-lists/{selectInputList}
+    public function delete(SelectInputList $selectInputList)
     {
         $dataType = $selectInputList->data_type;
         $selectInputList->delete();

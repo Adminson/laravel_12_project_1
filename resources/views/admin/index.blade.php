@@ -25,7 +25,7 @@
 
                 // Example: use appAjax for some custom call
                 appAjax({
-                    url: '{{ route('user_setting_list') }}',
+                    url: '{{ route('setting.user.list') }}',
                     method: 'GET',
                     onSuccess: function(res) {
                         console.log('User list loaded', res);
