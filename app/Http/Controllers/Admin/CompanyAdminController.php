@@ -52,13 +52,28 @@ class CompanyAdminController extends Controller
                 return $row->cmp_suspend_login ? 'Yes' : 'No';
             })
             ->addColumn('action', function ($row) {
-                $editUrl = route('setting.company.edit', $row->cmp_id);
+                $editUrl          = route('setting.company.edit', $row->cmp_id);
                 $systemMessageUrl = route('setting.system_message.index', $row->cmp_id);
 
                 return '
-                    <a href="' . $editUrl . '" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="' . $systemMessageUrl . '" class="btn btn-sm btn-info">System Message</a>
-                    <button type="button" class="btn btn-sm btn-danger btn-delete-company" data-id="' . $row->cmp_id . '">Delete</button>
+                    <div class="d-flex gap-1 flex-wrap">
+                        <a href="' . $editUrl . '"
+                            class="btn btn-sm btn-warning"
+                            title="Edit">
+                            <i class="icon-base ti tabler-pencil me-1"></i>Edit
+                        </a>
+                        <a href="' . $systemMessageUrl . '"
+                            class="btn btn-sm btn-info"
+                            title="System Message">
+                            <i class="icon-base ti tabler-message me-1"></i>Msg
+                        </a>
+                        <button type="button"
+                            class="btn btn-sm btn-danger btn-delete-company"
+                            data-id="' . $row->cmp_id . '"
+                            title="Delete">
+                            <i class="icon-base ti tabler-trash me-1"></i>Delete
+                        </button>
+                    </div>
                 ';
             })
             ->rawColumns(['action'])

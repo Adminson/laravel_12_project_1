@@ -12,7 +12,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -39,8 +39,11 @@ Route::prefix('setting')
         Route::prefix('user')
             ->name('user.')
             ->group(function () {
-                Route::get('/', [UserAdminController::class, 'index'])->name('index'); //setting.user.index
-                Route::get('/list', [UserAdminController::class, 'list'])->name('list'); //setting.user.list
+                Route::get('/', [UserAdminController::class, 'index'])->name('index');        // setting.user.index
+                Route::get('/list', [UserAdminController::class, 'list'])->name('list');     // setting.user.list
+                Route::post('/store', [UserAdminController::class, 'store'])->name('store'); // setting.user.store
+                Route::get('/{user}', [UserAdminController::class, 'show'])->name('show');   // setting.user.show
+                Route::put('/{user}', [UserAdminController::class, 'update'])->name('update'); // setting.user.update
             });
 
         /*

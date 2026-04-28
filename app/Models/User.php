@@ -23,6 +23,9 @@ class User extends Authenticatable implements AuditableContract
         'name',
         'email',
         'password',
+        'user_type',
+        'account_lock',
+        'mobile_no',
     ];
 
     /**
@@ -40,11 +43,15 @@ class User extends Authenticatable implements AuditableContract
      *
      * @return array<string, string>
      */
+    // Valid values for user_type enum
+    const USER_TYPES = ['user', 'staff', 'admin'];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'account_lock' => 'boolean',
         ];
     }
 }

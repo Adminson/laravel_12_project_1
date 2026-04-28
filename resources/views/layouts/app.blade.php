@@ -217,7 +217,7 @@
                                 >
                                     <div class="avatar avatar-online">
                                         <img
-                                            src="../../assets/img/avatars/1.png"
+                                            src="../../img/avatars/1.png"
                                             alt
                                             class="rounded-circle"
                                         />
@@ -233,7 +233,7 @@
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
                                                         <img
-                                                            src="../../assets/img/avatars/1.png"
+                                                            src="../../img/avatars/1.png"
                                                             alt
                                                             class="w-px-40 h-auto rounded-circle"
                                                         />
@@ -250,47 +250,16 @@
                                         <div class="dropdown-divider my-1 mx-n2"></div>
                                     </li>
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="#"
-                                        >
-                                            <i class="icon-base ti tabler-user icon-md me-3"></i><span>My
-                                                Profile</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="#"
-                                        >
-                                            <i
-                                                class="icon-base ti tabler-settings icon-md me-3"></i><span>Settings</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="#"
-                                        >
-                                            <span class="d-flex align-items-center align-middle">
-                                                <i
-                                                    class="flex-shrink-0 icon-base ti tabler-credit-card icon-md me-3"></i><span
-                                                    class="flex-grow-1 align-middle"
-                                                >Billing Plan</span>
-                                                <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider my-1 mx-n2"></div>
-                                    </li>
-                                    <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="javascript:void(0);"
-                                        >
-                                            <i class="icon-base ti tabler-power icon-md me-3"></i><span>Log Out</span>
-                                        </a>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <a
+                                                class="dropdown-item"
+                                                href="{{ route('logout') }}"
+                                                onclick="event.preventDefault(); this.closest('form').submit();"
+                                            >
+                                                <i class="icon-base ti tabler-power icon-md me-3"></i><span>Log Out</span>
+                                            </a>
+                                        </form>
                                     </li>
                                 </ul>
                             </li>

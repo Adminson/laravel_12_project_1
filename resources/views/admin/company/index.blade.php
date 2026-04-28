@@ -4,11 +4,8 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Company List</h4>
-            <a
-                href="{{ route('setting.company.create') }}"
-                class="btn btn-primary"
-            >
-                Create
+            <a href="{{ route('setting.company.create') }}" class="btn btn-primary">
+                <i class="icon-base ti tabler-plus me-1"></i> Create
             </a>
         </div>
         <div class="card-body">
